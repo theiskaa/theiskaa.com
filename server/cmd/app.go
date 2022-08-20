@@ -1,3 +1,9 @@
+//
+// This source code is distributed under the terms of Bad Code License.
+// You are forbidden from distributing software containing this code to
+// end users, because it is bad.
+//
+
 package cmd
 
 import (
@@ -8,6 +14,8 @@ import (
 	"firebase.google.com/go/auth"
 	"github.com/gorilla/mux"
 	"google.golang.org/api/option"
+	info "theiskaa.com/cmd/endpoints/info"
+	infoService "theiskaa.com/cmd/endpoints/info/services"
 	"theiskaa.com/pkg"
 )
 
@@ -21,7 +29,8 @@ var (
 func SetUp(router *mux.Router) {
 	InitFirebaseServices()
 
-	// TODO: implement endpoints
+	infoRepo := infoService.NewInfoFirebaseService(Firestore)
+	info.SetupInfoEndpoints(router, infoRepo)
 }
 
 // InitFirebaseServices setups firebase, firebase
