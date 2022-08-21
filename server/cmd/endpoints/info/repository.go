@@ -19,12 +19,12 @@ type InfoRepository interface {
 	Get(r *http.Request) (interface{}, *pkg.AppError)
 
 	// Updates concrete field of the (collections/info/me) document.
-	// It shouldn't called directly by its meaning to the actual document "me".
+	// Warn: It shouldn't called directly by its meaning to the actual document "me".
 	Update(r *http.Request) (interface{}, *pkg.AppError)
 
-	// Updates the whole document data "the (collections/info/me".
-	// It shouldn't called directly by its meaning to the actual document "me".
-	Overwrite(r *http.Request) (interface{}, *pkg.AppError)
+	// Removes concrete field of the (collections/info/me) document.
+	// Warn: It shouldn't called directly by its meaning to the actual document "me".
+	Delete(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 // A function that implements the functions to endpoints of [InfoRepository].
@@ -35,9 +35,9 @@ func SetupInfoEndpoints(router *mux.Router, repo InfoRepository) {
 
 	router.HandleFunc("/info/{field}", func(w http.ResponseWriter, r *http.Request) {
 		endpoints.EndpointFuncWrapper(w, r, repo.Update)
-	}).Methods("UPDATE")
-
-	router.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
-		endpoints.EndpointFuncWrapper(w, r, repo.Overwrite)
 	}).Methods("PUT")
+
+	router.HandleFunc("/info/{field}", func(w http.ResponseWriter, r *http.Request) {
+		endpoints.EndpointFuncWrapper(w, r, repo.Delete)
+	}).Methods("DELETE")
 }

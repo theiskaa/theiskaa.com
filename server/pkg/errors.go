@@ -136,4 +136,10 @@ var (
 		StatusCode: 403,
 		Code:       "invalid-email",
 	}
+
+	FieldNotExists = AppError{
+		Message:    "Provided field doesn't exists at document",
+		StatusCode: 404,
+		Code:       "field-not-exists",
+	}
 )

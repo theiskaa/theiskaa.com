@@ -14,9 +14,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/gorilla/mux"
-	"github.com/mitchellh/mapstructure"
 	"theiskaa.com/cmd/endpoints/info"
-	models "theiskaa.com/cmd/endpoints/info/models"
 	"theiskaa.com/pkg"
 )
 
@@ -40,9 +38,6 @@ func (info *InfoFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppErro
 		return nil, &appErr
 	}
 
-	infoData := models.Info{}
-	mapstructure.Decode(data, &infoData)
-
 	return data, nil
 }
 
@@ -62,27 +57,42 @@ func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppE
 	var infoData map[string]interface{}
 	json.Unmarshal(reqBody, &infoData)
 
-	if _, writingErr := info.collection.Doc("me").Set(ctx, infoData, firestore.Merge([]string{field})); writingErr != nil {
-		appErr := pkg.FromFirebaseError(err)
+	opt := firestore.Merge([]string{field})
+	if _, writingErr := info.collection.Doc("me").Set(ctx, infoData, opt); writingErr != nil {
+		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
 	}
 
 	return nil, nil
 }
 
-func (info *InfoFirebaseService) Overwrite(r *http.Request) (interface{}, *pkg.AppError) {
+func (info *InfoFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
 	ctx := context.Background()
 
-	reqBody, err := ioutil.ReadAll(r.Body)
+	// Get current document data.
+	data, err := pkg.GetDocumentsData(*info.collection, "me")
 	if err != nil {
+		appErr := pkg.FromFirebaseError(err)
+		return nil, &appErr
+	}
+
+	// Take the field's name, that has to be deleted.
+	field := mux.Vars(r)["field"]
+	if len(field) < 1 {
 		return nil, &pkg.InvalidRequestBody
 	}
 
-	var infoData map[string]interface{}
-	json.Unmarshal(reqBody, &infoData)
+	// Remove the field from data if it exists.
+	if _, ok := data[field]; ok {
+		delete(data, field)
+	} else {
+		return nil, &pkg.FieldNotExists
+	}
 
-	if _, writingErr := info.collection.Doc("me").Set(ctx, infoData); writingErr != nil {
-		appErr := pkg.FromFirebaseError(err)
+	// Overwrites the whole document with current modified, data variable.
+	// TODO: Instead use, `firestore.Merge([]string{field})` with `firestore.Delete`
+	if _, writingErr := info.collection.Doc("me").Set(ctx, data); writingErr != nil {
+		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
 	}
 
