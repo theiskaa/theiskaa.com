@@ -106,7 +106,18 @@ func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement delete functionality of posts.
+	ctx := context.Background()
+
+	id := mux.Vars(r)["id"]
+	if len(id) < 1 {
+		return nil, &pkg.InvalidRequestBody
+	}
+
+	if _, err := p.collection.Doc(id).Delete(ctx); err != nil {
+		appErr := pkg.FromFirebaseError(err)
+		return nil, &appErr
+	}
+
 	return nil, nil
 }
 
