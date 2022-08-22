@@ -6,6 +6,8 @@
 package posts
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"cloud.google.com/go/firestore"
@@ -74,8 +76,33 @@ func (p *PostsFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement add functionality of posts.
-	return nil, nil
+	ctx := context.Background()
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, &pkg.InvalidRequestBody
+	}
+
+	// Unwrap the binary request body as map model.
+	var postData map[string]interface{}
+	json.Unmarshal(reqBody, &postData)
+
+	// Decode the [postData] as post model structure.
+	var post models.Post
+	mapstructure.Decode(postData, &post)
+
+	// A new record at posts collection.
+	doc := p.collection.NewDoc()
+
+	// Pass the document's ID to the post model's ID.
+	post.ID = doc.ID
+
+	if _, writingErr := doc.Set(ctx, post.ToJSON()); writingErr != nil {
+		appErr := pkg.FromFirebaseError(writingErr)
+		return nil, &appErr
+	}
+
+	return post, nil
 }
 
 func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {

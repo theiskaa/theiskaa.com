@@ -6,6 +6,8 @@
 
 package posts
 
+import "github.com/mitchellh/mapstructure"
+
 // Post is the main model structure of the posts endpoint.
 type Post struct {
 	ID          string `json:"id"`          // A unique identification string
@@ -14,4 +16,12 @@ type Post struct {
 	Cover       string `json:"picture"`     // A relevant cover photo
 	Date        string `json:"date"`        // The posting || updating date
 	Content     string `json:"content"`     // The body, in Markdown or HTML
+}
+
+// Converts the [Post] data to the map.
+func (p *Post) ToJSON() map[string]interface{} {
+	var res map[string]interface{}
+	mapstructure.Decode(p, &res)
+
+	return res
 }

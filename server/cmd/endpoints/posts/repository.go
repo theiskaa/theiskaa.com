@@ -43,7 +43,7 @@ func SetupPostsEndpoints(router *mux.Router, repo PostsRepository) {
 
 	router.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
 		endpoints.EndpointFuncWrapper(w, r, repo.Add)
-	}).Methods("CREATE")
+	}).Methods("POST")
 
 	router.HandleFunc("/posts/{id}", func(w http.ResponseWriter, r *http.Request) {
 		endpoints.EndpointFuncWrapper(w, r, repo.Delete)
