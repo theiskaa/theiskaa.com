@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/firestore"
+	"github.com/gorilla/mux"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -59,14 +60,24 @@ func (p *PostsFirebaseService) Fetch(r *http.Request) (interface{}, *pkg.AppErro
 }
 
 func (p *PostsFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement get functionality of posts.
-	return nil, nil
+	data, err := pkg.GetDocumentsData(*p.collection, mux.Vars(r)["id"])
+	if err != nil {
+		appErr := pkg.FromFirebaseError(err)
+		return nil, &appErr
+	}
+
+	// Convert JSON map data to post model.
+	var post models.Post
+	mapstructure.Decode(data, &post)
+
+	return post, nil
 }
 
 func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError) {
 	// TODO: implement add functionality of posts.
 	return nil, nil
 }
+
 func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
 	// TODO: implement delete functionality of posts.
 	return nil, nil
