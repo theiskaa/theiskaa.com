@@ -16,6 +16,8 @@ import (
 	"google.golang.org/api/option"
 	info "theiskaa.com/cmd/endpoints/info"
 	infoService "theiskaa.com/cmd/endpoints/info/services"
+	posts "theiskaa.com/cmd/endpoints/posts"
+	postsService "theiskaa.com/cmd/endpoints/posts/services"
 	"theiskaa.com/pkg"
 )
 
@@ -29,8 +31,13 @@ var (
 func SetUp(router *mux.Router) {
 	InitFirebaseServices()
 
+	// Initialize [info] endpoints.
 	infoRepo := infoService.NewInfoFirebaseService(Firestore)
 	info.SetupInfoEndpoints(router, infoRepo)
+
+	// Initialize [posts] endpoints.
+	postsRepo := postsService.NewPostsFirebaseService(Firestore)
+	posts.SetupPostsEndpoints(router, postsRepo)
 }
 
 // InitFirebaseServices setups firebase, firebase

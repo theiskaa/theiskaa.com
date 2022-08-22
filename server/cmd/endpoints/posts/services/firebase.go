@@ -1,0 +1,78 @@
+//
+// This source code is distributed under the terms of Bad Code License.
+// You are forbidden from distributing software containing this code to
+// end users, because it is bad.
+//
+package posts
+
+import (
+	"net/http"
+
+	"cloud.google.com/go/firestore"
+	"github.com/mitchellh/mapstructure"
+	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
+	posts "theiskaa.com/cmd/endpoints/posts"
+	models "theiskaa.com/cmd/endpoints/posts/models"
+	"theiskaa.com/pkg"
+)
+
+type PostsFirebaseService struct {
+	db         *firestore.Client
+	collection *firestore.CollectionRef
+}
+
+// Set [PostsRepository] as [PostsFirebaseService].
+var _ posts.PostsRepository = &PostsFirebaseService{}
+
+// A creator function to generate the [PostsRepository] as [PostsFirebaseService].
+func NewPostsFirebaseService(db *firestore.Client) *PostsFirebaseService {
+	return &PostsFirebaseService{db: db, collection: db.Collection("posts")}
+}
+
+func (p *PostsFirebaseService) Fetch(r *http.Request) (interface{}, *pkg.AppError) {
+	ctx := context.Background()
+
+	var posts []models.Post
+
+	iter := p.collection.Documents(ctx)
+	defer iter.Stop()
+
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			appErr := pkg.FromFirebaseError(err)
+			return nil, &appErr
+		}
+
+		var post models.Post
+		mapstructure.Decode(doc.Data(), &post)
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (p *PostsFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement get functionality of posts.
+	return nil, nil
+}
+
+func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement add functionality of posts.
+	return nil, nil
+}
+func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement delete functionality of posts.
+	return nil, nil
+}
+
+func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement update functionality of posts.
+	return nil, nil
+}

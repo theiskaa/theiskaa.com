@@ -32,7 +32,7 @@ type PostsRepository interface {
 }
 
 // A function that implements the functions to endpoints of [PostsRepository].
-func SetupInfoEndpoints(router *mux.Router, repo PostsRepository) {
+func SetupPostsEndpoints(router *mux.Router, repo PostsRepository) {
 	router.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
 		endpoints.EndpointFuncWrapper(w, r, repo.Fetch)
 	}).Methods("GET")
