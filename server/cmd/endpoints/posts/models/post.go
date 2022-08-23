@@ -6,7 +6,9 @@
 
 package posts
 
-import "github.com/mitchellh/mapstructure"
+import (
+	"encoding/json"
+)
 
 // Post is the main model structure of the posts endpoint.
 type Post struct {
@@ -20,8 +22,10 @@ type Post struct {
 
 // Converts the [Post] data to the map.
 func (p *Post) ToJSON() map[string]interface{} {
-	var res map[string]interface{}
-	mapstructure.Decode(p, &res)
+	res, _ := json.Marshal(p)
 
-	return res
+	m := make(map[string]interface{})
+	json.Unmarshal(res, &m)
+
+	return m
 }

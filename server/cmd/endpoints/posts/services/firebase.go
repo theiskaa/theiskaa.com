@@ -122,6 +122,26 @@ func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppErr
 }
 
 func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement update functionality of posts.
+	ctx := context.Background()
+
+	id, field := mux.Vars(r)["id"], mux.Vars(r)["field"]
+	if len(id) < 1 || len(field) < 1 || field == "id" {
+		return nil, &pkg.InvalidRequestBody
+	}
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, &pkg.InvalidRequestBody
+	}
+
+	var postData map[string]interface{}
+	json.Unmarshal(reqBody, &postData)
+
+	_, writingErr := p.collection.Doc(id).Set(ctx, postData, firestore.Merge([]string{field}))
+	if writingErr != nil {
+		appErr := pkg.FromFirebaseError(writingErr)
+		return nil, &appErr
+	}
+
 	return nil, nil
 }
