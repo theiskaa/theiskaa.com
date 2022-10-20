@@ -5,16 +5,9 @@ So the web front-end project is a static web page without any connection to the 
 
 ---
 
-### API
-<p align="center">
-
-• • • still on development process • • •
-
-</p>
-
 ### Web
-<p align="center">
+Is a static html page built with Rust(Yew) + Web Assembly.
+Waiting for API, to re-write web, to be a full-functional website with its blogging, favorite-books, and etc ...
 
-• • • still on development process • • •
-
-</p>
+### API
+ • • • still on development process • • •
