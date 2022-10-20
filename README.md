@@ -1,29 +1,13 @@
-# Source code of [theiskaa.com](https://theiskaa.com)
+# [theiskaa.com](https://theiskaa.com)
 
-The collection of server, web and mobile source codes.
-Instead of breaking them in their individual folders, I collected them in one repository.
-- Microservice API is written in Go programming language. It's at `server/` folder.
-- Web App is going to be written in Rust programming language. It's at `web/` folder.
-- Mobile App is going to be written in Dart/Flutter programming language/framework. It's at `mobile/` folder.
-
----
-
-### MicroService
-
-Used Go(lang) as main programming language of microservice, uses [gorrila/mux](https://github.com/gorilla/mux) as http router.
-Implements repository pattern to make it easy implement different services via being based on one concrete repository.
-- Firebase service: Current service for both of endpoints (`info` & `posts`) is firebase service.
+The full source code of [theiskaa.com](https://theiskaa.com). Currently the `server/` is under the development process. 
+So the web front-end project is a static web page without any connection to the `server/` code.
 
 ---
 
 ### Web
-<p align="center">
-• • • Description will be available whenever the code is available • • •
-</p>
+Is a static html page built with Rust(Yew) + Web Assembly.
+Waiting for API, to re-write web, to be a full-functional website with its blogging, favorite-books, and etc ...
 
----
-
-### Mobile
-<p align="center">
-• • • Description will be available whenever the code is available • • •
-</p>
+### API
+ • • • still on development process • • •

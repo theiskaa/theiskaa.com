@@ -1,0 +1,157 @@
+:root { font-family: 'Inter', sans-serif; }
+@supports (font-variation-settings: normal) {
+  :root { font-family: 'Inter var', sans-serif; }
+}  
+
+html {
+  font-family: 'Inter', sans-serif;
+}
+
+@supports (font-variation-settings: normal) {
+  html {
+    font-family: 'Inter var', sans-serif;
+  }
+}
+
+body {
+  margin: auto;
+  line-height: 1.5em;
+  flex: flex;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  border-bottom: solid 2px crimson;
+  padding: 0;
+}
+
+a:visited {
+  color: black;
+}
+
+a:hover,
+a:active {
+  color: crimson;
+}
+
+h1 {
+  margin-bottom: 0.3em;
+  line-height: 1.2em;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.wrapper {
+  max-width: 960px;
+
+  margin: auto;
+
+  display: flex;
+  flex-direction: center;
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
+@media screen and (min-width: 575px) {
+  .wrapper {
+    margin: auto;
+    margin-top: 5em;
+  }
+
+  .columns {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .sidebar {
+    width: 30%;
+  }
+
+  .main {
+    width: 70%;
+  }
+
+  .menu {
+    flex-direction: column;
+  }
+}
+
+.sidebar header {
+  font-size: xx-large;
+  line-height: 1.2em;
+}
+
+.main> :first-child {
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+}
+
+.main> :last-child {
+  margin-bottom: 0 !important;
+  margin-right: 0 !important;
+}
+
+.menu .menu-item {
+  text-decoration: none;
+  margin: 0.2em;
+}
+
+.menu .menu-item.active {
+  font-weight: bold;
+  color: black;
+  border-bottom: none;
+}
+
+.avatar {
+  width: 125px;
+  height: 125px;
+  float: left;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  margin-right: 2em;
+  margin-top: 1em;
+}
+
+ul.values {
+  list-style-type: none;
+  padding-left: none;
+}
+
+ul.values li {
+  padding: 0.5em;
+}
+
+.postfooter {
+  border-top: 1px solid;
+  margin-top: 3em;
+  font-style: italic;
+}
+
+.footer {
+  margin-top: 3em;
+  text-align: center;
+  color: grey;
+}
+
+.footer a {
+  color: grey;
+}
+
+.footer a:visited {
+  color: grey;
+}
