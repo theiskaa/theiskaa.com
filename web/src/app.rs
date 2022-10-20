@@ -7,7 +7,6 @@
 use stylist::{yew::styled_component, Style};
 use yew::prelude::*;
 
-// TODO: add [Inter] font-style import.
 const STYLECSS: &str = include_str!("styles/main.css");
 
 #[styled_component(App)]
