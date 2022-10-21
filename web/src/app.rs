@@ -31,26 +31,17 @@ pub fn app() -> Html {
                  { " I'm Ismael Shakverdiev." }
                </p>
 
-               // Career
+               // Bio & Career
                <p>
-                 { "I'm founder of " }
-                 <a href="https://insolite.io">{ "Insolite" }</a>
-                 { " (open-source software development organization). And, Software Engineering TL at " }
+                 { "I'm a baby, language agnostic software engineer, with almost 3 year experience in programming and designing. +
+                   (I've 17 year experience in general life)." }
+                 <br />
+                 {"I founded "}
+                 <a href="https://insolite.io">{"Insolite"}</a>
+                 { " startup/organization for doing open source projects with an organized team. " }
+                 { "Currently, I'm working at " }
                  <a href="https://jobia.work">{ "Jobia" }</a>
-               </p>
-
-               // Projects
-               <p>
-                 { "I love making open source projects in my free time, here is some of them: " }
-                 <a href="https://github.com/theiskaa/mate">{ "mate" }</a>
-                 { ", " }
-                 <a href="https://github.com/insolite-dev/notya">{ "notya" }</a>
-                 { ", " }
-                 <a href="https://github.com/theiskaa/field_suggestion">{ "field_suggestion" }</a>
-                 { ", " }
-                 <a href="https://github.com/theiskaa/Visual-Time">{ "Visual-Time" }</a>
-                 { " and etc " }
-                 <a href="https://github.com/theiskaa/projects">{ "... " }</a>
+                 { " as a software engineering team lead."}
                </p>
 
                <div class="clearfix"></div>
@@ -58,13 +49,6 @@ pub fn app() -> Html {
                // Contact
                <h2 id="contact">{"Contact"}</h2>
                <div class="contact">
-                 <p>
-                   { "I'm multi-polyglot because of my ethnic nationality " }
-                   { "That means, I speak four native languages: " }
-                   <a href="https://en.wikipedia.org/wiki/Saingilo"> { "Ethnic Ingilo-Georgian" }</a>
-                   {", "}
-                   { "Georgian, Azerbaijani, and Turkish." }
-                 </p>
                  <p>
                    { "You can find me on " }
                    <a href="https://twitter.com/theiskaa">{"Twitter"}</a>
@@ -74,10 +58,20 @@ pub fn app() -> Html {
                    <a href="https://linkedin.com/in/theiskaa">{"LinkedIn"}</a>
                    {", and "}
                    <a href="https://instagram.com/theiskaa">{"Instagram"}</a>
+                   {"."}
                    <br />
-                    { "> Or send me an shit email " } <a href="mailto:me@theiskaa.com">{ "me@theiskaa.com" }</a>
-                   <br />
-                   <p> { "> You can also join to "}<a href="https://discord.gg/EJZYDHUq4a">{ "Insolite Community" }</a> { " Discord Server" } </p>
+                   <p>
+                    {" Never hesitate to send me an email at "}
+                    <a href="mailto:me@theiskaa.com"> {"me@theiskaa.com"} </a>
+                    {" I love getting email from you."}
+                   </p>
+                   <p>
+                     { "I'm multi-polyglot because of my ethnic nationality. " }
+                     { "that means I speak four native languages: " }
+                     <a href="https://en.wikipedia.org/wiki/Saingilo"> { "Ingiloan dialect" }</a>
+                     { " of Georgian, Georgian, Azerbaijani, and Turkish." }
+                   </p>
+                   <p> { "• You can also join to "}<a href="https://discord.gg/EJZYDHUq4a">{ "Insolite Community" }</a> { " Discord server." } </p>
                  </p>
                </div>
              </div>

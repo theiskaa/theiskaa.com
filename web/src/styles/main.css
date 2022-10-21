@@ -22,7 +22,7 @@ body {
 a {
   color: black;
   text-decoration: none;
-  border-bottom: solid 2px crimson;
+  border-bottom: solid 2px orange;
   padding: 0;
 }
 
@@ -32,7 +32,7 @@ a:visited {
 
 a:hover,
 a:active {
-  color: crimson;
+  color: orange;
 }
 
 h1 {
@@ -118,8 +118,8 @@ h1 {
 }
 
 .avatar {
-  width: 125px;
-  height: 125px;
+  width: 150px;
+  height: 150;
   float: left;
   border-radius: 6px;
   margin-bottom: 1em;
