@@ -1,16 +1,17 @@
 //
-// This source code is distributed under the terms of Bad Code License.
-// You are forbidden from distributing software containing this code to
-// end users, because it is bad.
+// Copyright 2022-present theiskaa. All rights reserved.
+// Use of this source code is governed by Apache-2.0 license
+// that can be found in the LICENSE file.
 //
+
 package posts
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go/auth"
 	"github.com/gorilla/mux"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/net/context"
@@ -22,6 +23,7 @@ import (
 
 type PostsFirebaseService struct {
 	db         *firestore.Client
+	auth       *auth.Client
 	collection *firestore.CollectionRef
 }
 
@@ -29,8 +31,8 @@ type PostsFirebaseService struct {
 var _ posts.PostsRepository = &PostsFirebaseService{}
 
 // A creator function to generate the [PostsRepository] as [PostsFirebaseService].
-func NewPostsFirebaseService(db *firestore.Client) *PostsFirebaseService {
-	return &PostsFirebaseService{db: db, collection: db.Collection("posts")}
+func NewPostsFirebaseService(db *firestore.Client, auth *auth.Client) *PostsFirebaseService {
+	return &PostsFirebaseService{db: db, collection: db.Collection("posts"), auth: auth}
 }
 
 func (p *PostsFirebaseService) Fetch(r *http.Request) (interface{}, *pkg.AppError) {
@@ -76,6 +78,10 @@ func (p *PostsFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError) {
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), p.auth); err != nil {
+		return nil, err
+	}
+
 	ctx := context.Background()
 
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -83,29 +89,28 @@ func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError)
 		return nil, &pkg.InvalidRequestBody
 	}
 
-	// Unwrap the binary request body as map model.
-	var postData map[string]interface{}
-	json.Unmarshal(reqBody, &postData)
-
-	// Decode the [postData] as post model structure.
-	var post models.Post
-	mapstructure.Decode(postData, &post)
+	transformedData := models.TransformPostBody(reqBody)
 
 	// A new record at posts collection.
 	doc := p.collection.NewDoc()
 
 	// Pass the document's ID to the post model's ID.
-	post.ID = doc.ID
+	transformedData["id"] = doc.ID
+	transformedData["date"] = pkg.Now()
 
-	if _, writingErr := doc.Set(ctx, post.ToJSON()); writingErr != nil {
+	if _, writingErr := doc.Set(ctx, transformedData); writingErr != nil {
 		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
 	}
 
-	return post, nil
+	return transformedData, nil
 }
 
 func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), p.auth); err != nil {
+		return nil, err
+	}
+
 	ctx := context.Background()
 
 	id := mux.Vars(r)["id"]
@@ -122,6 +127,10 @@ func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppErr
 }
 
 func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), p.auth); err != nil {
+		return nil, err
+	}
+
 	ctx := context.Background()
 
 	id, field := mux.Vars(r)["id"], mux.Vars(r)["field"]
@@ -134,10 +143,9 @@ func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppErr
 		return nil, &pkg.InvalidRequestBody
 	}
 
-	var postData map[string]interface{}
-	json.Unmarshal(reqBody, &postData)
+	transformed := models.TransformPostBody(reqBody)
 
-	_, writingErr := p.collection.Doc(id).Set(ctx, postData, firestore.Merge([]string{field}))
+	_, writingErr := p.collection.Doc(id).Set(ctx, transformed, firestore.Merge([]string{field}))
 	if writingErr != nil {
 		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr

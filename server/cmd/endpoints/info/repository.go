@@ -1,7 +1,7 @@
 //
-// This source code is distributed under the terms of Bad Code License.
-// You are forbidden from distributing software containing this code to
-// end users, because it is bad.
+// Copyright 2022-present theiskaa. All rights reserved.
+// Use of this source code is governed by Apache-2.0 license
+// that can be found in the LICENSE file.
 //
 
 package info
@@ -15,7 +15,7 @@ import (
 )
 
 type InfoRepository interface {
-	// Gets and writes the actual info model (from collections/info/me)
+	// Gets the actual info model (from collections/info/me)
 	Get(r *http.Request) (interface{}, *pkg.AppError)
 
 	// Updates concrete field of the (collections/info/me) document.

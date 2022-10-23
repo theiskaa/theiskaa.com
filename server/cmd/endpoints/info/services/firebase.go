@@ -1,34 +1,36 @@
 //
-// This source code is distributed under the terms of Bad Code License.
-// You are forbidden from distributing software containing this code to
-// end users, because it is bad.
+// Copyright 2022-present theiskaa. All rights reserved.
+// Use of this source code is governed by Apache-2.0 license
+// that can be found in the LICENSE file.
 //
 
 package info
 
 import (
 	"context"
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go/auth"
 	"github.com/gorilla/mux"
 	"theiskaa.com/cmd/endpoints/info"
+	models "theiskaa.com/cmd/endpoints/info/models"
 	"theiskaa.com/pkg"
 )
 
 type InfoFirebaseService struct {
 	db         *firestore.Client
+	auth       *auth.Client
 	collection *firestore.CollectionRef
 }
 
 // Set [InfoRepository] as [InfoFirebaseService].
 var _ info.InfoRepository = &InfoFirebaseService{}
 
-// A creator function to generate the InfoRepository as InfoFirebaseService.
-func NewInfoFirebaseService(db *firestore.Client) *InfoFirebaseService {
-	return &InfoFirebaseService{db: db, collection: db.Collection("info")}
+// A generator function to generate the InfoRepository as InfoFirebaseService.
+func NewInfoFirebaseService(db *firestore.Client, auth *auth.Client) *InfoFirebaseService {
+	return &InfoFirebaseService{db: db, collection: db.Collection("info"), auth: auth}
 }
 
 func (info *InfoFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError) {
@@ -42,6 +44,10 @@ func (info *InfoFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppErro
 }
 
 func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), info.auth); err != nil {
+		return nil, err
+	}
+
 	ctx := context.Background()
 
 	field := mux.Vars(r)["field"]
@@ -54,11 +60,10 @@ func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppE
 		return nil, &pkg.InvalidRequestBody
 	}
 
-	var infoData map[string]interface{}
-	json.Unmarshal(reqBody, &infoData)
+	transformedData := models.TransformInfoBody(reqBody)
 
 	opt := firestore.Merge([]string{field})
-	if _, writingErr := info.collection.Doc("me").Set(ctx, infoData, opt); writingErr != nil {
+	if _, writingErr := info.collection.Doc("me").Set(ctx, transformedData, opt); writingErr != nil {
 		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
 	}
@@ -67,6 +72,10 @@ func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppE
 }
 
 func (info *InfoFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), info.auth); err != nil {
+		return nil, err
+	}
+
 	ctx := context.Background()
 
 	// Get current document data.
