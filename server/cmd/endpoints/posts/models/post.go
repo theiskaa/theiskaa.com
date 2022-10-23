@@ -8,6 +8,8 @@ package posts
 
 import (
 	"encoding/json"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // Post is the main model structure of the posts endpoint.
@@ -15,7 +17,7 @@ type Post struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	Cover       string `json:"picture"`
+	Cover       string `json:"cover"`
 	Date        string `json:"date"`
 	Content     []Href `json:"content"`
 }
@@ -57,8 +59,32 @@ type Href struct {
 	URL string `json:"url,omitempty"`
 }
 
+// Takes byte array value of request body,
+// and translates it to valid representation of [Post] map.
+func TransformPostBody(body []byte) map[string]interface{} {
+	var data map[string]interface{}
+	json.Unmarshal(body, &data)
+
+	var post Post
+	mapstructure.Decode(data, &post)
+
+	return post.ToJson()
+}
+
+// Takes byte array value of request body,
+// and translates it to valid representation of [Href] map.
+func TransformHrefBody(body []byte) map[string]interface{} {
+	var data map[string]interface{}
+	json.Unmarshal(body, &data)
+
+	var href Href
+	mapstructure.Decode(data, &href)
+
+	return href.ToJson()
+}
+
 // ToJson converts the [Post] structure to map value.
-func (p *Post) ToJSON() map[string]interface{} {
+func (p *Post) ToJson() map[string]interface{} {
 	res, _ := json.Marshal(p)
 
 	m := make(map[string]interface{})
@@ -68,7 +94,7 @@ func (p *Post) ToJSON() map[string]interface{} {
 }
 
 // ToJson converts the [Href] structure to map value.
-func (h *Href) ToJSON() map[string]interface{} {
+func (h *Href) ToJson() map[string]interface{} {
 	res, _ := json.Marshal(h)
 
 	m := make(map[string]interface{})
