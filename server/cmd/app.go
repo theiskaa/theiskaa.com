@@ -32,7 +32,7 @@ func SetUp(router *mux.Router) {
 	InitFirebaseServices()
 
 	// Initialize [info] endpoints.
-	infoRepo := infoService.NewInfoFirebaseService(Firestore)
+	infoRepo := infoService.NewInfoFirebaseService(Firestore, FireAuth)
 	info.SetupInfoEndpoints(router, infoRepo)
 
 	// Initialize [posts] endpoints.

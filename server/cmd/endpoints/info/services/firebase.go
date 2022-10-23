@@ -12,6 +12,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go/auth"
 	"github.com/gorilla/mux"
 	"theiskaa.com/cmd/endpoints/info"
 	models "theiskaa.com/cmd/endpoints/info/models"
@@ -20,6 +21,7 @@ import (
 
 type InfoFirebaseService struct {
 	db         *firestore.Client
+	auth       *auth.Client
 	collection *firestore.CollectionRef
 }
 
@@ -27,8 +29,8 @@ type InfoFirebaseService struct {
 var _ info.InfoRepository = &InfoFirebaseService{}
 
 // A generator function to generate the InfoRepository as InfoFirebaseService.
-func NewInfoFirebaseService(db *firestore.Client) *InfoFirebaseService {
-	return &InfoFirebaseService{db: db, collection: db.Collection("info")}
+func NewInfoFirebaseService(db *firestore.Client, auth *auth.Client) *InfoFirebaseService {
+	return &InfoFirebaseService{db: db, collection: db.Collection("info"), auth: auth}
 }
 
 func (info *InfoFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError) {
@@ -42,7 +44,9 @@ func (info *InfoFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppErro
 }
 
 func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement the authorized user validation.
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), info.auth); err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 
@@ -68,7 +72,9 @@ func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppE
 }
 
 func (info *InfoFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement the authorized user validation.
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), info.auth); err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 
