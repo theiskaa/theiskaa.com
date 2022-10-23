@@ -7,7 +7,6 @@
 package posts
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
@@ -77,6 +76,8 @@ func (p *PostsFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement the authorized user validation.
+
 	ctx := context.Background()
 
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -84,29 +85,26 @@ func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError)
 		return nil, &pkg.InvalidRequestBody
 	}
 
-	// Unwrap the binary request body as map model.
-	var postData map[string]interface{}
-	json.Unmarshal(reqBody, &postData)
-
-	// Decode the [postData] as post model structure.
-	var post models.Post
-	mapstructure.Decode(postData, &post)
+	transformedData := models.TransformPostBody(reqBody)
 
 	// A new record at posts collection.
 	doc := p.collection.NewDoc()
 
 	// Pass the document's ID to the post model's ID.
-	post.ID = doc.ID
+	transformedData["id"] = doc.ID
+	transformedData["date"] = pkg.Now()
 
-	if _, writingErr := doc.Set(ctx, post.ToJSON()); writingErr != nil {
+	if _, writingErr := doc.Set(ctx, transformedData); writingErr != nil {
 		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
 	}
 
-	return post, nil
+	return transformedData, nil
 }
 
 func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement the authorized user validation.
+
 	ctx := context.Background()
 
 	id := mux.Vars(r)["id"]
@@ -123,6 +121,8 @@ func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppErr
 }
 
 func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
+	// TODO: implement the authorized user validation.
+
 	ctx := context.Background()
 
 	id, field := mux.Vars(r)["id"], mux.Vars(r)["field"]
@@ -135,10 +135,9 @@ func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppErr
 		return nil, &pkg.InvalidRequestBody
 	}
 
-	var postData map[string]interface{}
-	json.Unmarshal(reqBody, &postData)
+	transformed := models.TransformPostBody(reqBody)
 
-	_, writingErr := p.collection.Doc(id).Set(ctx, postData, firestore.Merge([]string{field}))
+	_, writingErr := p.collection.Doc(id).Set(ctx, transformed, firestore.Merge([]string{field}))
 	if writingErr != nil {
 		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
