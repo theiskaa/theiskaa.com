@@ -36,7 +36,7 @@ func SetUp(router *mux.Router) {
 	info.SetupInfoEndpoints(router, infoRepo)
 
 	// Initialize [posts] endpoints.
-	postsRepo := postsService.NewPostsFirebaseService(Firestore)
+	postsRepo := postsService.NewPostsFirebaseService(Firestore, FireAuth)
 	posts.SetupPostsEndpoints(router, postsRepo)
 }
 
@@ -48,7 +48,6 @@ func InitFirebaseServices() {
 	// This file isn't included in the source code.
 	// Just go and create new firebase project. Then download the
 	// Service Key Credentials file. And put somewhere under server/ folder.
-	// BTW, do not forget putting the project id.
 	pathOfKeyFile := "././servicekey.json"
 
 	opts := option.WithCredentialsFile(pathOfKeyFile)

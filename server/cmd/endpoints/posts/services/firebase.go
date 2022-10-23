@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go/auth"
 	"github.com/gorilla/mux"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/net/context"
@@ -22,6 +23,7 @@ import (
 
 type PostsFirebaseService struct {
 	db         *firestore.Client
+	auth       *auth.Client
 	collection *firestore.CollectionRef
 }
 
@@ -29,8 +31,8 @@ type PostsFirebaseService struct {
 var _ posts.PostsRepository = &PostsFirebaseService{}
 
 // A creator function to generate the [PostsRepository] as [PostsFirebaseService].
-func NewPostsFirebaseService(db *firestore.Client) *PostsFirebaseService {
-	return &PostsFirebaseService{db: db, collection: db.Collection("posts")}
+func NewPostsFirebaseService(db *firestore.Client, auth *auth.Client) *PostsFirebaseService {
+	return &PostsFirebaseService{db: db, collection: db.Collection("posts"), auth: auth}
 }
 
 func (p *PostsFirebaseService) Fetch(r *http.Request) (interface{}, *pkg.AppError) {
@@ -76,7 +78,9 @@ func (p *PostsFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement the authorized user validation.
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), p.auth); err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 
@@ -103,7 +107,9 @@ func (p *PostsFirebaseService) Add(r *http.Request) (interface{}, *pkg.AppError)
 }
 
 func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement the authorized user validation.
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), p.auth); err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 
@@ -121,7 +127,9 @@ func (p *PostsFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppErr
 }
 
 func (p *PostsFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppError) {
-	// TODO: implement the authorized user validation.
+	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), p.auth); err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 
