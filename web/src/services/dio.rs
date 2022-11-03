@@ -6,6 +6,7 @@
 
 use crate::models::*;
 use dotenv_codegen::dotenv;
+use reqwest::header::{ACCEPT, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE};
 use serde::{de::DeserializeOwned, Serialize};
 
 // Get API root from env.
@@ -63,8 +64,10 @@ impl Dio {
         let url = format!("{}{}", API_ROOT, url);
 
         let mut builder = reqwest::Client::new()
-            .request(method, url)
-            .header("Content-Type", "application/json");
+            .request(method, url.clone())
+            .header(CONTENT_TYPE, "application/json")
+            .header(ACCEPT, "application/json")
+            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
         if allow_body {
             builder = builder.json(&body);

@@ -5,8 +5,9 @@
 //
 
 use serde::{Deserialize, Serialize};
+use yew::Properties;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Properties)]
 pub struct InfoModel {
     pub picture: String,
     pub greeting: Vec<Link>,
