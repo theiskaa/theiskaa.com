@@ -4,8 +4,8 @@
 // that can be found in the LICENSE file.
 //
 
-mod info;
-mod router;
+mod menu;
+mod wrapper;
 
-pub use info::*;
-pub use router::*;
+pub use menu::*;
+pub use wrapper::*;
