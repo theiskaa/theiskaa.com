@@ -4,8 +4,9 @@
 // that can be found in the LICENSE file.
 //
 
+use crate::utils::to_html::ToHtml;
 use serde::{Deserialize, Serialize};
-use yew::Properties;
+use yew::{prelude::*, virtual_dom::VNode};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Properties)]
 pub struct InfoModel {
@@ -33,19 +34,42 @@ pub struct Link {
     pub style: String,
 }
 
-impl InfoModel {
-    pub fn to_string(&self) -> String {
-        format!(
-            "
-            picture: {},
-            greeting: {},
-            career: {},
-            contact: {},
-        ",
-            self.clone().picture,
-            self.clone().greeting.len(),
-            self.clone().career.len(),
-            self.clone().contact.len(),
-        )
+impl ToHtml for Link {
+    // Generates a valid [Link] to -> [Html] representation.
+    // Merges [title] and [url] with + [style]
+    fn to_html(&self) -> Vec<VNode> {
+        let current = {
+            if self.url.is_empty() {
+                if self.title.clone().as_str() == "\n" {
+                    html! { <br/> }
+                } else {
+                    html! { self.title.clone() }
+                }
+            } else {
+                html! {
+                    <a href={ self.url.clone() }> { self.title.clone() } </a>
+                }
+            }
+        };
+
+        vec![match self.style.clone().as_str() {
+            "bold" => html! {<b>{ current.clone() }</b>},
+            "italic" => html! {<i>{ current.clone() }</i>},
+            "strong" => html! {<strong>{ current.clone() }</strong>},
+            _ => current.clone(),
+        }]
+    }
+}
+
+impl ToHtml for Vec<Link> {
+    // Generates a valid [Vec<Link>] to -> [Vec<VNode>] representation.
+    // By converting each inner [Link] element.
+    fn to_html(&self) -> Vec<VNode> {
+        let mut collection: Vec<VNode> = Vec::new();
+        for l in self.iter() {
+            collection.push(l.clone().to_html().iter().nth(0).unwrap().clone());
+        }
+
+        return collection;
     }
 }
