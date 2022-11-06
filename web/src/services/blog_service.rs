@@ -13,4 +13,9 @@ impl BlogService {
     pub async fn fetch() -> Result<Vec<PostModel>, Error> {
         Dio::get::<Vec<PostModel>>(String::from("/posts")).await
     }
+
+    // Gets concrete post model by its [id].
+    pub async fn get(id: String) -> Result<PostModel, Error> {
+        Dio::get::<PostModel>(format!("/posts/{}", id)).await
+    }
 }

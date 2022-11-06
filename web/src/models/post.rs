@@ -58,7 +58,6 @@ pub struct Href {
 
 impl ToHtml for PostModel {
     // Generates a preview view from post model.
-    // TODO: add class appropriate styling to styles/main.css
     fn to_html(&self) -> Vec<VNode> {
         let preview = html! {
             <div class="post-preview">
@@ -88,7 +87,52 @@ impl ToHtml for Vec<PostModel> {
     }
 }
 
-//
-// TODO: impl ToHtml for Href {}
-// the implementation
-//
+impl ToHtml for Href {
+    // Generates a valid [VNode] representation from [Href].
+    fn to_html(&self) -> Vec<VNode> {
+        let rendered = match self.clone().typ.clone().as_str() {
+            "image" => {
+                html! { <img class="post-full-image" src={ self.clone().src.clone() } alt="image" /> }
+            }
+            "code" => html! { "TODO: build code impl" },
+            _ => {
+                let current = {
+                    if self.url.is_empty() {
+                        if self.clone().src.clone().as_str() == "\n" {
+                            html! { <br/> }
+                        } else {
+                            html! { self.clone().src.clone() }
+                        }
+                    } else {
+                        html! {
+                            <a href={ self.clone().url.clone() }> { self.clone().src.clone() } </a>
+                        }
+                    }
+                };
+
+                match self.style.clone().as_str() {
+                    "bold" => html! {<b>{ current.clone() }</b>},
+                    "italic" => html! {<i>{ current.clone() }</i>},
+                    "strong" => html! {<strong>{ current.clone() }</strong>},
+                    "header" => html! {<h2> { current.clone() } </h2> },
+                    "p" => html! { <p> { current.clone() } </p> },
+                    _ => current.clone(),
+                }
+            }
+        };
+
+        return vec![rendered];
+    }
+}
+
+impl ToHtml for Vec<Href> {
+    // Generates a valid vector of [VNode] from vector of [Href]
+    fn to_html(&self) -> Vec<VNode> {
+        let mut hrefs: Vec<VNode> = Vec::new();
+        for h in self.clone().iter() {
+            hrefs.push(h.clone().to_html().iter().nth(0).unwrap().clone());
+        }
+
+        return hrefs;
+    }
+}

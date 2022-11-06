@@ -37,6 +37,10 @@ pub fn blog_list() -> Html {
     }
 
     let blog_widget_impl = match blog_state.as_ref() {
+        None => match error_state.as_ref() {
+            Some(e) => html! { <ErrorCard model={e.clone()}/> },
+            None => html! { <Loading/> },
+        },
         Some(v) => {
             let blogs = v.clone().to_html().clone();
 
@@ -64,10 +68,6 @@ pub fn blog_list() -> Html {
                </div>
             }
         }
-        None => match error_state.as_ref() {
-            Some(e) => html! { <ErrorCard model={e.clone()}/> },
-            None => html! { <Loading/> },
-        },
     };
 
     html! { blog_widget_impl }
@@ -80,5 +80,45 @@ pub struct BlogPageProps {
 
 #[function_component(BlogPage)]
 pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
-    html! { format!("TODO: add blog renderer -> id::{}", id.clone()) }
+    let blog_state: UseStateHandle<Option<PostModel>> = use_state(|| None);
+    let error_state: UseStateHandle<Option<Error>> = use_state(|| None);
+
+    {
+        let id = id.clone();
+        let blog_state = blog_state.clone();
+        let error_state = error_state.clone();
+
+        use_effect_with_deps(
+            move |_| {
+                wasm_bindgen_futures::spawn_local(async move {
+                    let blog_data = BlogService::get(id).await;
+                    match blog_data {
+                        Ok(v) => blog_state.set(Some(v)),
+                        Err(e) => error_state.set(Some(e)),
+                    };
+                });
+                || ()
+            },
+            (),
+        );
+    }
+
+    let blog_widget_impl = match blog_state.as_ref() {
+        None => match error_state.as_ref() {
+            Some(e) => html! { <ErrorCard model={e.clone()}/> },
+            None => html! { <Loading/> },
+        },
+        Some(v) => {
+            html! {
+               <div>
+                 <h1> { v.clone().title.clone() } </h1>
+                 <p class="meta"> { v.clone().date.clone() } </p>
+                 <RainbowDivider/>
+                 { v.clone().content.clone().to_html().clone() }
+               </div>
+            }
+        }
+    };
+
+    html! { blog_widget_impl }
 }

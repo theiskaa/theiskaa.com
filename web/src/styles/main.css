@@ -66,7 +66,7 @@ body {
   }
 
   .sidebar {
-    width: 30%;
+    width: 25%;
   }
 
   .main {
@@ -283,6 +283,15 @@ blockquote {
   border-top: 0.5px transparent;
   height: 0.5px;
   background: linear-gradient(to right, transparent, orange, yellow, orange, transparent);
+}
+
+.post-full-image {
+  height: 120px;
+  float: left;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  margin-right: 2em;
+  margin-top: 1em;
 }
 
 .lds-ellipsis {
