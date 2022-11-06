@@ -7,6 +7,7 @@
 use yew::{html::ChildrenRenderer, prelude::*, virtual_dom::VNode};
 use yew_router::prelude::*;
 
+use super::BlogList;
 use crate::components::*;
 use crate::routes::Info;
 
@@ -37,9 +38,7 @@ pub fn switch(routes: &Route) -> Html {
         }
 
         Route::Blog => {
-            let blog: ChildrenRenderer<VNode> = Children::new(vec![
-                // TODO: add blog component.
-            ]);
+            let blog: ChildrenRenderer<VNode> = Children::new(vec![html! { <BlogList/> }]);
             return html! { <Wrapper child={ blog.clone() }/>};
         }
 
