@@ -37,7 +37,7 @@ type Href struct {
 	//  - text
 	//  - image
 	//  - code
-	Type string `json:"type"`
+	Type string `json:"typ"`
 
 	// Src is a field that used as source of content that has to be rendered.
 	Src string `json:"src"`
@@ -49,14 +49,14 @@ type Href struct {
 	//  - bold
 	//  - italic
 	//  - strong
-	Style string `json:"style,omitempty"`
+	Style string `json:"style"`
 
 	// The reference URL provider for [Src].
 	// > In case of [Type] being linked text type. <text>.
 	//
 	// same approach of `<a href="http://">{Src}</a>`
 	// but in go structure model.
-	URL string `json:"url,omitempty"`
+	URL string `json:"url"`
 }
 
 // Takes byte array value of request body,

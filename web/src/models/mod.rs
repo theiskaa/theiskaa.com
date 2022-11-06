@@ -6,6 +6,8 @@
 
 mod error;
 mod info;
+mod post;
 
 pub use error::*;
 pub use info::{InfoModel, Link};
+pub use post::{Href, PostModel};
