@@ -4,9 +4,8 @@
 // that can be found in the LICENSE file.
 //
 
-use yew::prelude::*;
-
 use crate::models::Error;
+use yew::prelude::*;
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct ErrorCardProps {

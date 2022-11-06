@@ -4,7 +4,7 @@
 // that can be found in the LICENSE file.
 //
 
-use crate::components::ErrorCard;
+use crate::components::{ErrorCard, Loading};
 use crate::models::{Error, InfoModel};
 use crate::services::InfoService;
 use crate::utils::ToHtml;
@@ -40,10 +40,7 @@ pub fn info() -> Html {
         Some(v) => html! { <InfoWidget info={v.clone()}/> },
         None => match error_state.as_ref() {
             Some(e) => html! { <div class="main"> <ErrorCard model={e.clone()}/> </div>},
-            None => {
-                // TODO: add pretty loading component.
-                html! {". . . LOADING . . ."}
-            }
+            None => html! { <div class="main"> <Loading/> </div>},
         },
     };
 

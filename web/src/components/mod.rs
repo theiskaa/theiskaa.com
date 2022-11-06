@@ -5,9 +5,11 @@
 //
 
 mod error;
+mod loading;
 mod menu;
 mod wrapper;
 
 pub use error::*;
+pub use loading::*;
 pub use menu::*;
 pub use wrapper::*;
