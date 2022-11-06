@@ -37,7 +37,7 @@ type Href struct {
 	//  - text
 	//  - image
 	//  - code
-	Type string `json:"typ"`
+	Type string `json:"typ" mapstructure:"typ"`
 
 	// Src is a field that used as source of content that has to be rendered.
 	Src string `json:"src"`
