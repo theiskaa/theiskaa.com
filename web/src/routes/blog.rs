@@ -43,10 +43,16 @@ pub fn blog_list() -> Html {
             let mut index = 0;
             let mut re_rendered: Vec<VNode> = Vec::new();
             for post in blogs.clone().iter() {
-                re_rendered.push(post.clone());
+                let route = format!(
+                    "/blog/{}",
+                    v.clone().iter().nth(index).unwrap().clone().id.clone()
+                );
+
+                re_rendered.push(html! { <a href={ route.clone() }> { post.clone() } </a> });
                 if index != blogs.len() - 1 {
                     re_rendered.push(html! { <RainbowDivider/> })
                 }
+
                 index += 1;
             }
 
@@ -67,4 +73,12 @@ pub fn blog_list() -> Html {
     html! { blog_widget_impl }
 }
 
-// TODO: add BlogPage component.
+#[derive(Clone, Properties, PartialEq)]
+pub struct BlogPageProps {
+    pub id: String,
+}
+
+#[function_component(BlogPage)]
+pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
+    html! { format!("TODO: add blog renderer -> id::{}", id.clone()) }
+}
