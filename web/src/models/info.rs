@@ -31,13 +31,19 @@ pub struct Link {
     //  - bold
     //  - italic
     //  - strong
+    //  - p -> <p>{}</p>
     pub style: String,
+
+    // The sub links of current link.
+    pub children: Vec<Link>,
 }
 
 impl ToHtml for Link {
     // Generates a valid [Link] to -> [Html] representation.
     // Merges [title] and [url] with + [style]
     fn to_html(&self) -> Vec<VNode> {
+        let children: Vec<VNode> = self.children.clone().to_html();
+
         let current = {
             if self.url.is_empty() {
                 if self.title.clone().as_str() == "\n" {
@@ -52,12 +58,24 @@ impl ToHtml for Link {
             }
         };
 
-        vec![match self.style.clone().as_str() {
+        let current_render = match self.style.clone().as_str() {
             "bold" => html! {<b>{ current.clone() }</b>},
             "italic" => html! {<i>{ current.clone() }</i>},
             "strong" => html! {<strong>{ current.clone() }</strong>},
+            "p" => html! { <p> { current.clone() } </p> },
             _ => current.clone(),
-        }]
+        };
+
+        if children.is_empty() {
+            return vec![current_render.clone()];
+        }
+
+        return vec![html! {
+             <div>
+               { current_render.clone() }
+               { children.clone() }
+             </div>
+        }];
     }
 }
 
