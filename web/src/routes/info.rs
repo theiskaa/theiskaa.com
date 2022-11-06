@@ -39,8 +39,8 @@ pub fn info() -> Html {
     let info_widget_impl = match info_state.as_ref() {
         Some(v) => html! { <InfoWidget info={v.clone()}/> },
         None => match error_state.as_ref() {
-            Some(e) => html! { <div class="main"> <ErrorCard model={e.clone()}/> </div>},
-            None => html! { <div class="main"> <Loading/> </div>},
+            Some(e) => html! { <ErrorCard model={e.clone()}/> },
+            None => html! { <Loading/> },
         },
     };
 
@@ -63,5 +63,5 @@ fn info_widget(InfoWidgetProps { info }: &InfoWidgetProps) -> Html {
         html! { <div class="contact"> { info.clone().contact.to_html() } </div> },
     ];
 
-    html! { <div class="main"> { collections } </div> }
+    html! { <div> { collections } </div> }
 }

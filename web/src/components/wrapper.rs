@@ -18,7 +18,7 @@ pub fn wrapper(WrapperProps { child }: &WrapperProps) -> Html {
     let route: Route = hooks::use_route().unwrap_or_default();
 
     // The page container that renders child argument.
-    let main = html! {<div class="main"> { child.clone() } </div>};
+    let main = html! { <div class="main"> { child.clone() } </div> };
 
     // The [Menu] component implementation.
     let menu = html! { <Menu route={route.clone().to_path() }/> };
@@ -38,8 +38,8 @@ pub fn wrapper(WrapperProps { child }: &WrapperProps) -> Html {
           { sidebar.clone() }
           { main.clone() }
          </div>
+         <Footer/>
        </div>
-       <Footer/>
       </div>
     }
 }
