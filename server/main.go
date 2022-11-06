@@ -20,5 +20,5 @@ func main() {
 	router := mux.NewRouter()
 	cmd.SetUp(router)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":9090", router))
 }

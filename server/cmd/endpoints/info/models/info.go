@@ -37,7 +37,11 @@ type Link struct {
 	//  - bold
 	//  - italic
 	//  - strong
+	//  - p -> <p>{}</p>
 	Style string `json:"style"`
+
+	// The sub links of current link.
+	Children []Link `json:"children"`
 }
 
 // Takes byte array value of request body,
