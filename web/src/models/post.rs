@@ -91,14 +91,25 @@ impl ToHtml for Href {
     // Generates a valid [VNode] representation from [Href].
     fn to_html(&self) -> Vec<VNode> {
         let rendered = match self.clone().typ.clone().as_str() {
+            // TODO: add divider type match.
             "image" => {
                 html! { <img class="post-full-image" src={ self.clone().src.clone() } alt="image" /> }
             }
-            "code" => html! { "TODO: build code impl" },
+            "code" => html! {
+                <div class="language-plaintext highlighter-rouge">
+                  <div class="highlight">
+                   <pre class="highlight">
+                    <code> { self.clone().src.clone().as_str() } </code>
+                   </pre>
+                  </div>
+                </div>
+            },
             _ => {
                 let current = {
                     if self.url.is_empty() {
-                        if self.clone().src.clone().as_str() == "\n" {
+                        if self.clone().src.clone().as_str() == "\n"
+                            || self.clone().src.clone().as_str() == "\\n"
+                        {
                             html! { <br/> }
                         } else {
                             html! { self.clone().src.clone() }
