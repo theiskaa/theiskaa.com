@@ -4,12 +4,13 @@
 // that can be found in the LICENSE file.
 //
 
-use crate::components::{ErrorCard, Loading};
+use crate::components::{ErrorCard, Loading, RainbowDivider};
 use crate::models::{Error, PostModel};
 use crate::services::BlogService;
 use crate::utils::ToHtml;
 
 use yew::prelude::*;
+use yew::virtual_dom::VNode;
 
 #[function_component(BlogList)]
 pub fn blog_list() -> Html {
@@ -36,7 +37,27 @@ pub fn blog_list() -> Html {
     }
 
     let blog_widget_impl = match blog_state.as_ref() {
-        Some(v) => html! { <div> { v.clone().to_html().clone() } </div> },
+        Some(v) => {
+            let blogs = v.clone().to_html().clone();
+
+            let mut index = 0;
+            let mut re_rendered: Vec<VNode> = Vec::new();
+            for post in blogs.clone().iter() {
+                re_rendered.push(post.clone());
+                if index != blogs.len() - 1 {
+                    re_rendered.push(html! { <RainbowDivider/> })
+                }
+                index += 1;
+            }
+
+            html! {
+               <div>
+                 <h1> { "All Posts" } </h1>
+                 <br/>
+                 <div> { re_rendered.clone() } </div>
+               </div>
+            }
+        }
         None => match error_state.as_ref() {
             Some(e) => html! { <ErrorCard model={e.clone()}/> },
             None => html! { <Loading/> },

@@ -240,10 +240,49 @@ blockquote {
   padding-bottom: 1em;
 }
 
-.error-card .error-title {
-  font-weight: bold;
-  color: crimson;
-  border-bottom: none;
+.post-preview {
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+}
+
+.post-preview-image {
+  height: 80px;
+  float: left;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  margin-right: 2em;
+  margin-top: 1em;
+}
+
+.post-preview-id {
+  font-size: 10px;
+  color: rgba(255, 165, 0, 0.5);
+}
+
+.post-preview-title {
+  font-size: 18px;
+  color: black;
+  margin-bottom: 5px;
+  margin-top: 2px;
+}
+
+.post-preview-desc {
+  font-size: 15px;
+  margin-bottom: 2px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.post-preview-date {
+  font-size: 15px;
+  color: rgba(255, 165, 0, 1);
+  text-align: right;
+}
+
+.rainbow {
+  border-top: 0.5px transparent; 
+  height: 0.5px;
+  background: linear-gradient(to right, transparent, orange, yellow, orange, transparent);
 }
 
 .lds-ellipsis {
@@ -363,3 +402,4 @@ blockquote {
     transform: translate(24px, 0);
   }
 }
+

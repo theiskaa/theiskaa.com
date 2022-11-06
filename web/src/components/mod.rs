@@ -4,11 +4,13 @@
 // that can be found in the LICENSE file.
 //
 
+mod dividers;
 mod error;
 mod loading;
 mod menu;
 mod wrapper;
 
+pub use dividers::*;
 pub use error::*;
 pub use loading::*;
 pub use menu::*;

@@ -62,11 +62,9 @@ impl ToHtml for PostModel {
     fn to_html(&self) -> Vec<VNode> {
         let preview = html! {
             <div class="post-preview">
-                <div class="post-preview-image">
-                  <img class="post-preview-image" src={ self.clone().cover } alt="post-cover-picture" title="post-cover-picture"/>
-                </div>
+                <img class="post-preview-image" src={ self.clone().cover } alt="post-cover-picture" title="post-cover-picture"/>
                 <div class="post-preview-content">
-                  <div class="post-preview-id"> { self.id.clone().as_str() } </div>
+                  <div class="post-preview-id"> { format!("#{}", self.id.clone()).as_str() } </div>
                   <div class="post-preview-title"> { self.title.clone().as_str() } </div>
                   <div class="post-preview-desc"> { self.description.clone().as_str() } </div>
                   <div class="post-preview-date"> { self.date.clone().as_str() } </div>
