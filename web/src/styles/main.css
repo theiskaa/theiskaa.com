@@ -1,7 +1,12 @@
-:root { font-family: 'Inter', sans-serif; }
+:root {
+  font-family: 'Inter', sans-serif;
+}
+
 @supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
-}  
+  :root {
+    font-family: 'Inter var', sans-serif;
+  }
+}
 
 html {
   font-family: 'Inter', sans-serif;
@@ -86,6 +91,10 @@ h1 {
     width: 70%;
   }
 
+  .error-card {
+    width: 70%;
+  }
+
   .menu {
     flex-direction: column;
   }
@@ -154,4 +163,28 @@ ul.values li {
 
 .footer a:visited {
   color: grey;
+}
+
+.error-card {
+  width: 150px;
+  height: 150;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  margin-right: 2em;
+  margin-top: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border-top-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-left-style: solid;
+  border-color: lightCoral;
+}
+
+.error-card .error-title {
+  font-weight: bold;
+  color: crimson;
+  border-bottom: none;
 }

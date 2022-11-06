@@ -4,8 +4,10 @@
 // that can be found in the LICENSE file.
 //
 
+mod error;
 mod menu;
 mod wrapper;
 
+pub use error::*;
 pub use menu::*;
 pub use wrapper::*;

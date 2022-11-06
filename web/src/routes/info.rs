@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 //
 
+use crate::components::ErrorCard;
 use crate::models::{Error, InfoModel};
 use crate::services::InfoService;
 use crate::utils::ToHtml;
@@ -36,14 +37,9 @@ pub fn info() -> Html {
     }
 
     let info_widget_impl = match info_state.as_ref() {
-        Some(v) => html! {
-            <InfoWidget info={v.clone()}/>
-        },
+        Some(v) => html! { <InfoWidget info={v.clone()}/> },
         None => match error_state.as_ref() {
-            Some(e) => {
-                // TODO: add pretty error component.
-                html! {format!("Error getting info: {}", e).as_str()}
-            }
+            Some(e) => html! { <div class="main"> <ErrorCard model={e.clone()}/> </div>},
             None => {
                 // TODO: add pretty loading component.
                 html! {". . . LOADING . . ."}
@@ -51,9 +47,7 @@ pub fn info() -> Html {
         },
     };
 
-    html! {
-        info_widget_impl
-    }
+    html! { info_widget_impl }
 }
 
 #[derive(Properties, PartialEq)]

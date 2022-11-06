@@ -5,7 +5,6 @@
 //
 
 use crate::{components::menu::Menu, routes::Route};
-use stylist::{yew::styled_component, Style};
 use yew::prelude::*;
 use yew_router::{hooks, Routable};
 
@@ -14,16 +13,8 @@ pub struct WrapperProps {
     pub child: Children,
 }
 
-const STYLECSS: &str = include_str!("../styles/main.css");
-
-#[styled_component(Wrapper)]
+#[function_component(Wrapper)]
 pub fn wrapper(WrapperProps { child }: &WrapperProps) -> Html {
-    let global_style = match Style::new(STYLECSS) {
-        // TODO: Implement pretty error.
-        Err(e) => return html! { format!("Something went wrong: {}", e) },
-        Ok(s) => s,
-    };
-
     let route: Route = hooks::use_route().unwrap_or_default();
 
     // The page container that renders child argument.
@@ -41,7 +32,7 @@ pub fn wrapper(WrapperProps { child }: &WrapperProps) -> Html {
     };
 
     html! {
-      <div class={global_style}>
+      <div>
        <div class="wrapper">
          <div class="columns">
           { sidebar.clone() }
