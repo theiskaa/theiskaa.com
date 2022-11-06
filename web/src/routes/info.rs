@@ -10,7 +10,7 @@ use crate::services::InfoService;
 use crate::utils::ToHtml;
 
 use yew::prelude::*;
-use yew::virtual_dom::VNode;
+use yew::virtual_dom::{VList, VNode};
 
 #[function_component(Info)]
 pub fn info() -> Html {
@@ -54,7 +54,7 @@ pub struct InfoWidgetProps {
 
 #[function_component(InfoWidget)]
 fn info_widget(InfoWidgetProps { info }: &InfoWidgetProps) -> Html {
-    let collections: Vec<VNode> = vec![
+    let children: Vec<VNode> = vec![
         html! { <img class="avatar" src={ info.clone().picture } alt="My picture" title="profile picture"/> },
         html! { <p style="margin-top: 0; line-height: 1.2em;"> { info.clone().greeting.to_html() } </p> },
         html! { <p> { info.clone().career.to_html() } </p> },
@@ -63,5 +63,7 @@ fn info_widget(InfoWidgetProps { info }: &InfoWidgetProps) -> Html {
         html! { <div class="contact"> { info.clone().contact.to_html() } </div> },
     ];
 
-    html! { <div> { collections } </div> }
+    let collected_vlist = VList::with_children(children, None);
+
+    html! { collected_vlist.clone() }
 }

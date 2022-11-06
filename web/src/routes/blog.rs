@@ -10,7 +10,7 @@ use crate::services::BlogService;
 use crate::utils::ToHtml;
 
 use yew::prelude::*;
-use yew::virtual_dom::VNode;
+use yew::virtual_dom::{VList, VNode};
 
 #[function_component(BlogList)]
 pub fn blog_list() -> Html {
@@ -60,13 +60,16 @@ pub fn blog_list() -> Html {
                 index += 1;
             }
 
-            html! {
-               <div>
-                 <h1> { "All Posts" } </h1>
-                 <br/>
-                 <div> { re_rendered.clone() } </div>
-               </div>
-            }
+            let collected_vlist = VList::with_children(
+                vec![
+                    html! { <h1> { "All Posts" } </h1> },
+                    html! { <br/> },
+                    html! { <div> { re_rendered.clone() } </div> },
+                ],
+                None,
+            );
+
+            html! { collected_vlist.clone() }
         }
     };
 
@@ -109,14 +112,16 @@ pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
             None => html! { <Loading/> },
         },
         Some(v) => {
-            html! {
-               <div>
-                 <h1> { v.clone().title.clone() } </h1>
-                 <p class="meta"> { v.clone().date.clone() } </p>
-                 <RainbowDivider/>
-                 { v.clone().content.clone().to_html().clone() }
-               </div>
-            }
+            let content = VList::with_children(v.clone().content.clone().to_html().clone(), None);
+            let children: Vec<VNode> = vec![
+                html! { <h1> { v.clone().title.clone() } </h1> },
+                html! { <p class="meta"> { v.clone().date.clone() } </p> },
+                html! { <RainbowDivider/> },
+                html! { content.clone() },
+            ];
+
+            let collected_vlist = VList::with_children(children, None);
+            html! { collected_vlist.clone() }
         }
     };
 
