@@ -20,3 +20,10 @@ And `/posts` is the endpoint that manages the blog posts that I wrote.
 Written in Rust and uses [Yew](https://yew.rs) framework. Implements [yew_router](https://yew.rs/docs/next/concepts/router) for routing, [stylist](https://crates.io/crates/stylist) for styling, and custom request service wrapper(dio) to [reqwest](https://crates.io/crates/reqwest) for HTTP requesting.
 
 ---
+
+<img alt="web" src="https://user-images.githubusercontent.com/59066341/200322993-ef226839-5b42-4d2d-a8a7-7e7d7ec20a86.png">
+
+<p align="center">
+Design inspired from <a href="https://thorstenball.com"> thorstenball.com </a> 'cause of its simplicity and easy implementation in rust. <br>
+Thanks Thorsten <3
+</p>
