@@ -9,6 +9,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"theiskaa.com/cmd"
@@ -20,5 +21,11 @@ func main() {
 	router := mux.NewRouter()
 	cmd.SetUp(router)
 
-	log.Fatal(http.ListenAndServe(":9090", router))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("defaulting to port %s", port)
+	}
+
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
