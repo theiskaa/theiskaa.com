@@ -294,8 +294,9 @@ blockquote {
 
 .post-preview-date {
   font-size: 15px;
-  color: rgba(255, 165, 0, 1);
+  color: rgba(255, 165, 0, 0.5);
   text-align: right;
+  matgin-top: 2px;
 }
 
 .rainbow {
