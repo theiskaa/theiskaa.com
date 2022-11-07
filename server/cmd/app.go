@@ -8,6 +8,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -45,12 +46,8 @@ func SetUp(router *mux.Router) {
 func InitFirebaseServices() {
 	ctx := context.Background()
 
-	// This file isn't included in the source code.
-	// Just go and create new firebase project. Then download the
-	// Service Key Credentials file. And put somewhere under server/ folder.
-	pathOfKeyFile := "././servicekey.json"
-
-	opts := option.WithCredentialsFile(pathOfKeyFile)
+	firekey := os.Getenv("FIREKEY")
+	opts := option.WithCredentialsJSON([]byte(firekey))
 	config := &firebase.Config{ProjectID: "theiskaacom"}
 	app, err := firebase.NewApp(ctx, config, opts)
 
@@ -60,14 +57,14 @@ func InitFirebaseServices() {
 	}
 	FireApp = app
 
-	authClient, err := FireApp.Auth(ctx)
-	if err != nil {
+	authClient, authErr := FireApp.Auth(ctx)
+	if authErr != nil {
 		pkg.AlertError(nil, pkg.FirebaseAuthSetupError)
 		return
 	}
 
-	db, err := FireApp.Firestore(ctx)
-	if err != nil {
+	db, dbErr := FireApp.Firestore(ctx)
+	if dbErr != nil {
 		pkg.AlertError(nil, pkg.FirebaseDBSetupError)
 		return
 	}
