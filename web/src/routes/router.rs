@@ -7,6 +7,7 @@
 use yew::{html::ChildrenRenderer, prelude::*, virtual_dom::VNode};
 use yew_router::prelude::*;
 
+use super::{BlogList, BlogPage};
 use crate::components::*;
 use crate::routes::Info;
 
@@ -17,6 +18,9 @@ pub enum Route {
 
     #[at("/blog")]
     Blog,
+
+    #[at("/blog/:id")]
+    BlogPage { id: String },
 
     #[at("/#contact")]
     Contact,
@@ -33,21 +37,24 @@ pub fn switch(routes: &Route) -> Html {
     match routes {
         Route::Home => {
             let info: ChildrenRenderer<VNode> = Children::new(vec![html! { <Info/> }]);
-            return html! { <Wrapper child={ info.clone() }/>};
+            return html! { <Wrapper child={ info.clone() }/> };
         }
 
         Route::Blog => {
-            let blog: ChildrenRenderer<VNode> = Children::new(vec![
-                // TODO: add blog component.
-            ]);
-            return html! { <Wrapper child={ blog.clone() }/>};
+            let blog: ChildrenRenderer<VNode> = Children::new(vec![html! { <BlogList/> }]);
+            return html! { <Wrapper child={ blog.clone() }/> };
+        }
+
+        Route::BlogPage { id } => {
+            let blog_page = Children::new(vec![html! { <BlogPage id={ id.clone() }/> }]);
+            return html! { <Wrapper child={ blog_page.clone() }/> };
         }
 
         Route::Contact => {
             let contact: ChildrenRenderer<VNode> = Children::new(vec![
                 // TODO: add contact component.
             ]);
-            return html! { <Wrapper child={contact.clone()}/>};
+            return html! { <Wrapper child={contact.clone()}/> };
         }
 
         Route::NotFound => {

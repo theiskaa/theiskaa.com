@@ -19,6 +19,11 @@ pub fn menu(MenuProps { route }: &MenuProps) -> Html {
             html! { <a href="/blog">{"Blog"}</a> },
             String::from("/blog"),
         ),
+        // TODO: impl local posts page.
+        (
+            html! { <a href="https://github.com/theiskaa">{"Projects"}</a> },
+            String::from(""),
+        ),
         (
             html! { <a href="/#contact">{"Contact"}</a> },
             String::from("/Contact"),
