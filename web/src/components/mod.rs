@@ -6,12 +6,14 @@
 
 mod dividers;
 mod error;
+mod html_render;
 mod loading;
 mod menu;
 mod wrapper;
 
 pub use dividers::*;
 pub use error::*;
+pub use html_render::*;
 pub use loading::*;
 pub use menu::*;
 pub use wrapper::*;

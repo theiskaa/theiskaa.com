@@ -4,7 +4,7 @@
 // that can be found in the LICENSE file.
 //
 
-use crate::components::{ErrorCard, Loading, RainbowDivider};
+use crate::components::{ErrorCard, HtmlRender, Loading, RainbowDivider};
 use crate::models::{Error, PostModel};
 use crate::services::BlogService;
 use crate::utils::ToHtml;
@@ -112,12 +112,11 @@ pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
             None => html! { <Loading/> },
         },
         Some(v) => {
-            let content = VList::with_children(v.clone().content.clone().to_html().clone(), None);
             let children: Vec<VNode> = vec![
                 html! { <h1> { v.clone().title.clone() } </h1> },
                 html! { <p class="meta"> { v.clone().date.clone() } </p> },
                 html! { <RainbowDivider/> },
-                html! { content.clone() },
+                html! { <HtmlRender html={ v.clone().content.clone() }/>},
             ];
 
             let collected_vlist = VList::with_children(children, None);
