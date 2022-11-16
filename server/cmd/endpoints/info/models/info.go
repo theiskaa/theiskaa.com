@@ -4,7 +4,7 @@
 // that can be found in the LICENSE file.
 //
 
-package info
+package posts
 
 import (
 	"encoding/json"
@@ -12,78 +12,34 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// Info is the main model of the info endpoint.
-type Info struct {
-	Picture  string `json:"picture"`
-	Greeting []Link `json:"greeting"`
-	Career   []Link `json:"career"`
-	Contact  []Link `json:"contact"`
-}
-
-// Link is a additional URL passing structure for the info.
-// If the [URL] is empty, link represents non-linkable simple text element.
-// And, if title is empty, link represents empty line.
-type Link struct {
-	// Title is the main domain of [Link] structure.
-	Title string `json:"title"`
-
-	// The reference URL provider for [Title].
-	// same approach of `<a href="http://">{Title}</a>`
-	// but in go structure model.
-	URL string `json:"url"`
-
-	// Style is a font-style identifier of [Title] field.
-	// Could be:
-	//  - bold
-	//  - italic
-	//  - strong
-	//  - p -> <p>{}</p>
-	Style string `json:"style"`
-
-	// The sub links of current link.
-	Children []Link `json:"children"`
+// Post is the main model structure of the posts endpoint.
+type Post struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Cover       string `json:"cover"`
+	Date        string `json:"date"`
+	Content     string `json:"content"`
 }
 
 // Takes byte array value of request body,
-// and translates it to valid representation of [Info] map.
-func TransformInfoBody(body []byte) map[string]interface{} {
+// and translates it to valid representation of [Post] map.
+func TransformPostBody(body []byte) map[string]interface{} {
 	var data map[string]interface{}
 	json.Unmarshal(body, &data)
 
-	var info Info
-	mapstructure.Decode(data, &info)
+	var post Post
+	mapstructure.Decode(data, &post)
 
-	return info.ToJson()
+	return post.ToJson()
 }
 
-// Takes byte array value of request body,
-// and translates it to valid representation of [Link] map.
-func TransformLinkBody(body []byte) map[string]interface{} {
-	var data map[string]interface{}
-	json.Unmarshal(body, &data)
+// ToJson converts the [Post] structure to map value.
+func (p *Post) ToJson() map[string]interface{} {
+	res, _ := json.Marshal(p)
 
-	var link Link
-	mapstructure.Decode(data, &link)
-
-	return link.ToJson()
-}
-
-// ToJson converts the [Info] structure to map value.
-func (i *Info) ToJson() map[string]interface{} {
-	b, _ := json.Marshal(&i)
-
-	var m map[string]interface{}
-	_ = json.Unmarshal(b, &m)
-
-	return m
-}
-
-// ToJson converts the [Link] structure to map value.
-func (l *Link) ToJson() map[string]interface{} {
-	b, _ := json.Marshal(&l)
-
-	var m map[string]interface{}
-	_ = json.Unmarshal(b, &m)
+	m := make(map[string]interface{})
+	json.Unmarshal(res, &m)
 
 	return m
 }
