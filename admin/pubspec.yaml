@@ -18,7 +18,8 @@ dependencies:
   webview_flutter_web: ^0.1.0+4
   webview_flutter: ^3.0.4
   dio: ^4.0.6
-  flutter_bloc: ^8.1.1
+  bloc: ^7.2.1
+  flutter_bloc: ^7.3.3
 
 dev_dependencies:
   flutter_test:

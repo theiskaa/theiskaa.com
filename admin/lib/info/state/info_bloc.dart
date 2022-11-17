@@ -5,14 +5,16 @@
 //
 
 import 'package:admin/core/error.dart';
+import 'package:admin/info/models/info.dart';
+import 'package:admin/info/services/info_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'info_event.dart';
 part 'info_state.dart';
 
-
-class Info extends Bloc<InfoEvent, InfoState> {
-  Info() : super(InfoState.unknown());
+class InfoBloc extends Bloc<InfoEvent, InfoState> {
+  final infoService = InfoService();
+  InfoBloc() : super(InfoState.unknown());
 
   @override
   Future<void> close() async => await super.close();
@@ -24,10 +26,105 @@ class Info extends Bloc<InfoEvent, InfoState> {
   @override
   Stream<InfoState> mapEventToState(InfoEvent event) async* {
     switch (event.type) {
-      // TODO: add event handlers.
+      case InfoEvents.getStart:
+        yield* mapEventToGetStart(event);
+        break;
+      case InfoEvents.updateStart:
+        yield* mapEventToUpdateStart(event);
+        break;
       default:
         //ignore:avoid_print
         print('Found no implementation for event: ${event.type}');
     }
   }
+
+  Stream<InfoState> mapEventToGetStart(InfoEvent event) async* {
+    var infoState = state.copyWith(event: event.type, loading: true);
+
+    yield infoState;
+
+    try {
+      final res = await infoService.get();
+
+      infoState = state.copyWith(
+        loading: false,
+        info: res.data,
+        event: res.data == null ? InfoEvents.getError : InfoEvents.getSuccess,
+      );
+    } on Exception catch (exception) {
+      infoState = state.copyWith(
+        loading: false,
+        event: InfoEvents.getError,
+        error: ErrorModel.fromException(exception),
+      );
+    }
+
+    yield infoState;
+  }
+
+  Stream<InfoState> mapEventToUpdateStart(InfoEvent event) async* {
+    var infoState = state.copyWith(event: event.type, loading: true);
+
+    yield infoState;
+
+    try {
+      final Info info = event.payload['info'];
+      final String field = event.payload['field'];
+
+      await infoService.update(field, info);
+
+      var currentInfo = state.info;
+      if(currentInfo == null) {
+          currentInfo = info;
+      } else {
+          currentInfo.mergeWith(info);
+      }
+
+      infoState = state.copyWith(
+        loading: false,
+        info: currentInfo,
+        event: InfoEvents.updateSuccess,
+      );
+    } on Exception catch (exception) {
+      infoState = state.copyWith(
+        loading: false,
+        event: InfoEvents.updateError,
+        error: ErrorModel.fromException(exception),
+      );
+    }
+
+    yield infoState;
+  }
+
+    Stream<InfoState> mapEventToDeleteStart(InfoEvent event) async* {
+    var infoState = state.copyWith(event: event.type, loading: true);
+
+    yield infoState;
+
+    try {
+      final String field = event.payload['field'];
+
+      await infoService.delete(field);
+
+      var currentInfo = state.info;
+      if(currentInfo != null) {
+          currentInfo = currentInfo.removeField(field);
+      }
+
+      infoState = state.copyWith(
+        loading: false,
+        info: currentInfo,
+        event: InfoEvents.deleteSuccess,
+      );
+    } on Exception catch (exception) {
+      infoState = state.copyWith(
+        loading: false,
+        event: InfoEvents.deleteError,
+        error: ErrorModel.fromException(exception),
+      );
+    }
+
+    yield infoState;
+  }
+
 }

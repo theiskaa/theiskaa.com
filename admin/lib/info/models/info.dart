@@ -31,6 +31,32 @@ class Info {
     );
   }
 
+  /// Merges the current info([this]) with given [info] model.
+  Info mergeWith(Info info) {
+    return Info(
+      picture: info.picture ?? picture,
+      greeting: info.greeting ?? greeting,
+      career: info.career ?? career,
+      contact: info.contact ?? contact,
+    );
+  }
+
+  /// Removes the given field from the current([this]) info model.
+  Info removeField(String field) {
+    switch (field) {
+      case 'picture':
+        return mergeWith(const Info(picture: ''));
+      case 'greeting':
+        return mergeWith(const Info(greeting: []));
+      case 'career':
+        return mergeWith(const Info(career: []));
+      case 'contact':
+        return mergeWith(const Info(contact: []));
+      default:
+        return this;
+    }
+  }
+
   Info.fromJson(Map<String, dynamic> data)
       : picture = data['picture'],
         greeting = data['greeting'],

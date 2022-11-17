@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-/// YHQ api class (wrapper) to call backend api.
+// A general wrapper of http requesting.
 class API {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
