@@ -11,6 +11,9 @@ use crate::utils::ToHtml;
 
 use yew::prelude::*;
 use yew::virtual_dom::{VList, VNode};
+use yew_router::prelude::*;
+
+use super::Route;
 
 #[function_component(BlogList)]
 pub fn blog_list() -> Html {
@@ -47,12 +50,9 @@ pub fn blog_list() -> Html {
             let mut index = 0;
             let mut re_rendered: Vec<VNode> = Vec::new();
             for post in blogs.clone().iter() {
-                let route = format!(
-                    "/blog/{}",
-                    v.clone().iter().nth(index).unwrap().clone().id.clone()
-                );
+                let id = v.clone().iter().nth(index).unwrap().clone().id.clone();
 
-                re_rendered.push(html! { <a href={ route.clone() }> { post.clone() } </a> });
+                re_rendered.push(html! { <Link<Route> to={Route::BlogPage { id }}> { post.clone() } </Link<Route>> });
                 if index != blogs.len() - 1 {
                     re_rendered.push(html! { <RainbowDivider/> })
                 }
