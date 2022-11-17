@@ -5,6 +5,9 @@
 //
 
 use yew::{prelude::*, virtual_dom::VNode};
+use yew_router::prelude::*;
+
+use crate::routes::Route;
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct MenuProps {
@@ -14,9 +17,12 @@ pub struct MenuProps {
 #[function_component(Menu)]
 pub fn menu(MenuProps { route }: &MenuProps) -> Html {
     let titles: Vec<(VNode, String)> = vec![
-        (html! { <a href="/">{"Info"}</a> }, String::from("/")),
         (
-            html! { <a href="/blog">{"Blog"}</a> },
+            html! { <Link<Route> to={Route::Home}> { "About" } </Link<Route>> },
+            String::from("/"),
+        ),
+        (
+            html! { <Link<Route> to={Route::Blog}> { "Blog" } </Link<Route>> },
             String::from("/blog"),
         ),
         // TODO: impl local posts page.
@@ -25,7 +31,7 @@ pub fn menu(MenuProps { route }: &MenuProps) -> Html {
             String::from(""),
         ),
         (
-            html! { <a href="/#contact">{"Contact"}</a> },
+            html! { <Link<Route> to={Route::Contact}> { "Contact" } </Link<Route>> },
             String::from("/Contact"),
         ),
     ];
@@ -43,9 +49,5 @@ pub fn menu(MenuProps { route }: &MenuProps) -> Html {
         parsed.push(html! { <div class={ class_name.clone() }> { title.0.clone() } </div> });
     }
 
-    html! {
-      <div class="menu">
-        { parsed }
-      </div>
-    }
+    html! { <div class="menu"> { parsed } </div> }
 }

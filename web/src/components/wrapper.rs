@@ -48,10 +48,7 @@ pub fn wrapper(WrapperProps { child }: &WrapperProps) -> Html {
 pub fn footer() -> Html {
     html! {
       <footer class="footer">
-        <p>
-         { "Copyright © 2022 Ismael Shakverdiev. " }
-         <a href="" title="Privacy Policy">{ "Privacy Policy" }</a>
-        </p>
+        <p> { "Copyright © 2022 Ismael Shakverdiev" } </p>
        </footer>
     }
 }
