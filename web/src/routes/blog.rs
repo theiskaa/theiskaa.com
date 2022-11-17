@@ -4,13 +4,16 @@
 // that can be found in the LICENSE file.
 //
 
-use crate::components::{ErrorCard, Loading, RainbowDivider};
+use crate::components::{ErrorCard, HtmlRender, Loading, RainbowDivider};
 use crate::models::{Error, PostModel};
 use crate::services::BlogService;
 use crate::utils::ToHtml;
 
 use yew::prelude::*;
 use yew::virtual_dom::{VList, VNode};
+use yew_router::prelude::*;
+
+use super::Route;
 
 #[function_component(BlogList)]
 pub fn blog_list() -> Html {
@@ -47,12 +50,9 @@ pub fn blog_list() -> Html {
             let mut index = 0;
             let mut re_rendered: Vec<VNode> = Vec::new();
             for post in blogs.clone().iter() {
-                let route = format!(
-                    "/blog/{}",
-                    v.clone().iter().nth(index).unwrap().clone().id.clone()
-                );
+                let id = v.clone().iter().nth(index).unwrap().clone().id.clone();
 
-                re_rendered.push(html! { <a href={ route.clone() }> { post.clone() } </a> });
+                re_rendered.push(html! { <Link<Route> to={Route::BlogPage { id }}> { post.clone() } </Link<Route>> });
                 if index != blogs.len() - 1 {
                     re_rendered.push(html! { <RainbowDivider/> })
                 }
@@ -112,12 +112,11 @@ pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
             None => html! { <Loading/> },
         },
         Some(v) => {
-            let content = VList::with_children(v.clone().content.clone().to_html().clone(), None);
             let children: Vec<VNode> = vec![
                 html! { <h1> { v.clone().title.clone() } </h1> },
                 html! { <p class="meta"> { v.clone().date.clone() } </p> },
                 html! { <RainbowDivider/> },
-                html! { content.clone() },
+                html! { <HtmlRender html={ v.clone().content.clone() }/>},
             ];
 
             let collected_vlist = VList::with_children(children, None);

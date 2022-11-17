@@ -15,15 +15,13 @@ import (
 	"theiskaa.com/cmd"
 )
 
-// FIXME: runs on local server at :8080
-// TODO:  run at remote server.
 func main() {
 	router := mux.NewRouter()
 	cmd.SetUp(router)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "9090"
 		log.Printf("defaulting to port %s", port)
 	}
 
