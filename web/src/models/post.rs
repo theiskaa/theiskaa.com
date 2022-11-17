@@ -15,45 +15,7 @@ pub struct PostModel {
     pub description: String,
     pub cover: String,
     pub date: String,
-    pub content: Vec<Href>,
-}
-
-// The content token reference model.
-// Which is a dynamic structure that could represent:
-// - text(normal/linked)
-// - image
-// - code-snippet
-//
-// Each that representation should be handled by [Href]'s [type].
-// And [src] of [Href] is the main source of value.
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct Href {
-    // typ is a field that represents the rendering style of [Href].
-    //
-    // Could be:
-    //  - text
-    //  - image
-    //  - code
-    pub typ: String,
-
-    // src is a field that used as source of content that has to be rendered.
-    pub src: String,
-
-    // Style is a font-style identifier of [src] field.
-    // > In case of [type] being any kind of text type.
-    //
-    // Could be:
-    //  - bold
-    //  - italic
-    //  - strong
-    pub style: String,
-
-    // The reference URL provider for [src].
-    // > In case of [type] being linked text type. <text>.
-    //
-    // same approach of `<a href="http://">{Src}</a>`
-    // but in rust structure model.
-    pub url: String,
+    pub content: String,
 }
 
 impl ToHtml for PostModel {
@@ -84,66 +46,5 @@ impl ToHtml for Vec<PostModel> {
         }
 
         return posts;
-    }
-}
-
-impl ToHtml for Href {
-    // Generates a valid [VNode] representation from [Href].
-    fn to_html(&self) -> Vec<VNode> {
-        let rendered = match self.clone().typ.clone().as_str() {
-            // TODO: add divider type match.
-            "image" => {
-                html! { <img class="post-full-image" src={ self.clone().src.clone() } alt="image" /> }
-            }
-            "code" => html! {
-                <div class="language-plaintext highlighter-rouge">
-                  <div class="highlight">
-                   <pre class="highlight">
-                    <code> { self.clone().src.clone().as_str() } </code>
-                   </pre>
-                  </div>
-                </div>
-            },
-            _ => {
-                let current = {
-                    if self.url.is_empty() {
-                        if self.clone().src.clone().as_str() == "\n"
-                            || self.clone().src.clone().as_str() == "\\n"
-                        {
-                            html! { <br/> }
-                        } else {
-                            html! { self.clone().src.clone() }
-                        }
-                    } else {
-                        html! {
-                            <a href={ self.clone().url.clone() }> { self.clone().src.clone() } </a>
-                        }
-                    }
-                };
-
-                match self.style.clone().as_str() {
-                    "bold" => html! {<b>{ current.clone() }</b>},
-                    "italic" => html! {<i>{ current.clone() }</i>},
-                    "strong" => html! {<strong>{ current.clone() }</strong>},
-                    "header" => html! {<h2> { current.clone() } </h2> },
-                    "p" => html! { <p> { current.clone() } </p> },
-                    _ => current.clone(),
-                }
-            }
-        };
-
-        return vec![rendered];
-    }
-}
-
-impl ToHtml for Vec<Href> {
-    // Generates a valid vector of [VNode] from vector of [Href]
-    fn to_html(&self) -> Vec<VNode> {
-        let mut hrefs: Vec<VNode> = Vec::new();
-        for h in self.clone().iter() {
-            hrefs.push(h.clone().to_html().iter().nth(0).unwrap().clone());
-        }
-
-        return hrefs;
     }
 }
