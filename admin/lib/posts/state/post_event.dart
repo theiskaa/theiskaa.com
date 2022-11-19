@@ -36,7 +36,7 @@ class PostEvent {
     type = PostEvents.fetchStart;
   }
 
-  PostEvent.get() {
+  PostEvent.get(String this.payload) {
     type = PostEvents.getStart;
   }
 
@@ -48,8 +48,8 @@ class PostEvent {
     type = PostEvents.deleteStart;
   }
 
-  PostEvent.update(String field, Post post) {
+  PostEvent.update(String id ,field, Post post) {
     type = PostEvents.updateStart;
-    payload = {'field': field, 'post': post};
+    payload = {'id': id, 'field': field, 'post': post};
   }
 }

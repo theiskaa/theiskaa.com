@@ -29,7 +29,7 @@ class PostService {
   }
 
   /// Updates the concrete post document's concrete field.
-  Future<Response> update(String field, Post post) async {
-    return await api.http.put('$path/$field', data: post.toJson());
+  Future<Response> update(String id, field, Post post) async {
+    return await api.http.put('$path/$id/$field', data: post.toJson());
   }
 }
