@@ -9,11 +9,17 @@ import 'package:flutter/material.dart';
 
 class PostCard extends StatelessWidget {
   final Post model;
-  const PostCard({super.key, required this.model});
+  final Function() onPressed;
+  const PostCard({
+    super.key,
+    required this.model,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onPressed,
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: SizedBox(height: 80, child: Image.network(model.cover!)),
