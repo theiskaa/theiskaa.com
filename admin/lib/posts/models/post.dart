@@ -42,12 +42,12 @@ class Post {
   /// Merges the current Post([this]) with given [post] model.
   Post mergeWith(Post post) {
     return Post(
-        id: post.id ?? id,
-        title: post.title ?? title,
-        description: post.description ?? description,
-        cover: post.cover ?? cover,
-        date: post.date ?? date,
-        content: post.content ?? content,
+      id: post.id ?? id,
+      title: post.title ?? title,
+      description: post.description ?? description,
+      cover: post.cover ?? cover,
+      date: post.date ?? date,
+      content: post.content ?? content,
     );
   }
 
@@ -85,4 +85,7 @@ class Post {
         'date': date,
         'content': content,
       };
+
+  static List<String> get editablefields =>
+      ['title', 'description', 'cover', 'date', 'content'];
 }

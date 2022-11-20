@@ -21,6 +21,7 @@ dependencies:
   bloc: ^7.2.1
   flutter_bloc: ^7.3.3
   logger: ^1.1.0
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +30,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - .env
