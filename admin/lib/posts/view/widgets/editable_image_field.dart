@@ -40,12 +40,7 @@ class EditableImageField extends StatelessWidget {
             builder: (context) {
               final source = controller.text.replaceAll(' ', '');
 
-              if (source.isEmpty) {
-                return Image.network(
-                  'https://user-images.githubusercontent.com/59066341/200175781-23d128d4-cd74-403e-a705-60b25e865742.png',
-                );
-              }
-
+              if (source.isEmpty) return Image.asset('assets/cover.png');
               return Image.network(source);
             },
           ),
