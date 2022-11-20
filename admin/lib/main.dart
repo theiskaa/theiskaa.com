@@ -5,10 +5,20 @@
 //
 
 import 'package:admin/app.dart';
-import 'package:admin/register_web_webview.dart';
+import 'package:admin/core/bloc_observer.dart';
+import 'package:admin/firebase_options.dart';
+import 'package:bloc/bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  registerWebViewWebImplementation();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  Bloc.observer = AppStateObserver();
+
   runApp(const App());
 }

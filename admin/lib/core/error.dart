@@ -48,7 +48,7 @@ class ErrorModel {
     }
 
     if (exception is DioError) {
-      err = ErrorModel.fromJson(exception.response!.data);
+      err = ErrorModel.fromJson(exception.response?.data ?? {});
     }
 
     return err;

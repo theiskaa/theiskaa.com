@@ -20,6 +20,7 @@ dependencies:
   dio: ^4.0.6
   bloc: ^7.2.1
   flutter_bloc: ^7.3.3
+  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:

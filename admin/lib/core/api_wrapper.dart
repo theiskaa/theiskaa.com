@@ -1,3 +1,4 @@
+import 'package:admin/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -13,6 +14,7 @@ class API {
     receiveTimeout: 180 * 1000, // 3 minutes
     sendTimeout: 5000,
     followRedirects: false,
+    baseUrl: ENV.route,
   );
 
   API() {
@@ -20,8 +22,6 @@ class API {
   }
 
   Dio get http => _http;
-
-  set httpBaseUrl(String url) => httpOptions.baseUrl = url;
 
   // Set authentification token to bearer for interceptor.
   set httpBearer(String? token) {
@@ -46,4 +46,3 @@ class API {
     httpBearer = await auth.currentUser?.getIdToken(!isNotExpired);
   }
 }
-
