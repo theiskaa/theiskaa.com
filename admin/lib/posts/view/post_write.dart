@@ -6,6 +6,7 @@
 
 import 'package:admin/posts/models/post.dart';
 import 'package:admin/posts/state/post_bloc.dart';
+import 'package:admin/posts/view/widgets/editable_image_field.dart';
 import 'package:admin/posts/view/widgets/editable_tile.dart';
 import 'package:admin/widgets/loadings.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +35,12 @@ class _PostWriteState extends State<PostWrite> {
   final titleKey = GlobalKey<FormState>();
   final descriptionKey = GlobalKey<FormState>();
   final contentKey = GlobalKey<FormState>();
+  final coverKey = GlobalKey<FormState>();
 
   late TextEditingController titleController;
   late TextEditingController descriptionController;
   late TextEditingController contentController;
+  late TextEditingController coverController;
 
   @override
   void initState() {
@@ -48,6 +51,9 @@ class _PostWriteState extends State<PostWrite> {
       text: widget.model?.description,
     );
     contentController = TextEditingController(text: widget.model?.content);
+    coverController = TextEditingController(text: widget.model?.cover);
+
+    coverController.addListener(() => setState(() {}));
     super.initState();
   }
 
@@ -57,8 +63,7 @@ class _PostWriteState extends State<PostWrite> {
       id: widget.model?.id,
       title: titleController.text,
       description: descriptionController.text,
-      // TODO: add cover.
-      cover: widget.model?.cover,
+      cover: coverController.text,
       date: widget.model?.date,
       content: contentController.text,
     );
@@ -86,6 +91,10 @@ class _PostWriteState extends State<PostWrite> {
             },
           ),
           onPressed: () {
+            //
+            // TODO: add form key validation before executing the action.
+            //
+
             final post = generatePost();
 
             final PostEvent event = {
@@ -113,6 +122,10 @@ class _PostWriteState extends State<PostWrite> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
         child: Column(children: [
+          EditableImageField(
+            formKey: coverKey,
+            controller: coverController,
+          ),
           EditableTile(
             hint: 'Post Title',
             formKey: titleKey,
