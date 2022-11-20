@@ -23,6 +23,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   // ignore: invalid_use_of_visible_for_testing_member
   void clearCache() => emit(PostState.unknown());
 
+  /// A wrapper call method for fetch event.
+  ///
+  /// In case of being [skills] null or empty, fetches them again.
+  Future<void> autoFetch() async {
+    final posts = state.posts;
+    if (posts == null || posts.isEmpty) add(PostEvent.fetch());
+  }
+
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
     switch (event.type) {
