@@ -29,6 +29,43 @@ class _PostHomeState extends State<PostsHome> {
     super.initState();
   }
 
+  void onRemove(Post post) {
+    showDialog(
+      context: context,
+      builder: (context) => BlocListener<PostBloc, PostState>(
+        bloc: postBloc,
+        listener: (context, state) {
+          final isSuccess = state.event == PostEvents.deleteSuccess;
+          final isError = state.event == PostEvents.deleteError;
+          if (isSuccess || isError) Navigator.pop(context);
+        },
+        child: AlertDialog(
+          title: Text('Do you want to delete post : "${post.id}" ?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            BlocBuilder<PostBloc, PostState>(builder: (context, state) {
+              final isLoading = state.event == PostEvents.deleteStart;
+              return TextButton(
+                child: Builder(builder: (context) {
+                  if (isLoading) return Loadings.cupertino(context);
+                  return const Text('Delete');
+                }),
+                onPressed: () {
+                  if (isLoading) return;
+                  postBloc.add(PostEvent.delete(post.id!));
+                  Navigator.pop(context);
+                },
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -50,7 +87,10 @@ class _PostHomeState extends State<PostsHome> {
             final isLoading = state.event == PostEvents.fetchStart;
             if (isLoading) return Center(child: Loadings.cupertino(context));
 
-            return PostsList(posts: state.posts ?? []);
+            return PostsList(
+              posts: state.posts ?? [],
+              onRemovePressed: (_, post) => onRemove(post),
+            );
           },
         ),
       ),
@@ -60,7 +100,12 @@ class _PostHomeState extends State<PostsHome> {
 
 class PostsList extends StatelessWidget {
   final List<Post> posts;
-  const PostsList({super.key, required this.posts});
+  final void Function(BuildContext, Post post) onRemovePressed;
+  const PostsList({
+    super.key,
+    required this.posts,
+    required this.onRemovePressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +120,7 @@ class PostsList extends StatelessWidget {
             .map<Widget>(
               (p) => PostCard(
                 model: p,
+                onRemovePressed: (context) => onRemovePressed(context, p),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
