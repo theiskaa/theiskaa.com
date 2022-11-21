@@ -10,8 +10,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class PostCard extends StatelessWidget {
   final Post model;
-  final Function() onPressed;
-  final void Function(BuildContext) onRemovePressed;
+  final Function()? onPressed;
+  final void Function(BuildContext)? onRemovePressed;
 
   const PostCard({
     super.key,
@@ -26,13 +26,14 @@ class PostCard extends StatelessWidget {
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
         children: [
-          SlidableAction(
-            onPressed: onRemovePressed,
-            backgroundColor: Colors.redAccent,
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'Delete',
-          ),
+          if (onRemovePressed != null)
+            SlidableAction(
+              onPressed: onRemovePressed,
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Delete',
+            ),
         ],
       ),
       child: ListTile(
