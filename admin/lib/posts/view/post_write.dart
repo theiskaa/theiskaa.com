@@ -123,24 +123,33 @@ class _PostWriteState extends State<PostWrite> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          bottomNavigationBar: FractionallySizedBox(
-            widthFactor: .8,
-            child: ElevatedButton(
-              onPressed: onAct,
-              child: BlocBuilder<PostBloc, PostState>(
-                builder: (context, state) {
-                  if (state.event == PostEvents.addStart ||
-                      state.event == PostEvents.updateStart) {
-                    return Loadings.cupertino(context);
-                  }
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: FractionallySizedBox(
+              widthFactor: .8,
+              child: ElevatedButton(
+                onPressed: onAct,
+                child: BlocBuilder<PostBloc, PostState>(
+                  builder: (context, state) {
+                    if (state.event == PostEvents.addStart ||
+                        state.event == PostEvents.updateStart) {
+                      return Loadings.cupertino(context);
+                    }
 
-                  final title = {
-                    WriteType.edit: 'Save Changes',
-                    WriteType.create: 'Create new post'
-                  }[widget.type];
+                    final title = {
+                      WriteType.edit: 'Save Changes',
+                      WriteType.create: 'Create new post'
+                    }[widget.type];
 
-                  return Text(title ?? '');
-                },
+                    return Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        title ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

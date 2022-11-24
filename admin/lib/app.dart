@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 //
 
+import 'package:admin/core/themes.dart';
 import 'package:admin/info/state/info_bloc.dart';
 import 'package:admin/posts/state/post_bloc.dart';
 import 'package:admin/widgets/navigator_button.dart';
@@ -20,10 +21,11 @@ class App extends StatelessWidget {
         BlocProvider<PostBloc>(create: (context) => PostBloc()),
         BlocProvider<InfoBloc>(create: (context) => InfoBloc()),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         title: 'theiskaa.com admin app',
         debugShowCheckedModeBanner: false,
-        home: MainWrapper(),
+        theme: Themes.appThemeLight,
+        home: const MainWrapper(),
       ),
     );
   }
