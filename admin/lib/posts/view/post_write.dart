@@ -9,6 +9,7 @@ import 'package:admin/posts/state/post_bloc.dart';
 import 'package:admin/posts/view/post_preview.dart';
 import 'package:admin/posts/view/widgets/editable_image_field.dart';
 import 'package:admin/posts/view/widgets/editable_tile.dart';
+import 'package:admin/posts/view/widgets/html_tag_editor.dart';
 import 'package:admin/widgets/loadings.dart';
 import 'package:admin/widgets/utils.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,8 @@ class PostWrite extends StatefulWidget {
 
 class _PostWriteState extends State<PostWrite> {
   late PostBloc postBloc;
+
+  final FocusNode contentNode = FocusNode();
 
   final titleKey = GlobalKey<FormState>();
   final descriptionKey = GlobalKey<FormState>();
@@ -122,123 +125,138 @@ class _PostWriteState extends State<PostWrite> {
       listener: stateListener,
       child: DefaultTabController(
         length: 2,
-        child: Scaffold(
-          bottomNavigationBar: Padding(
-            padding: const EdgeInsets.only(bottom: 15),
-            child: FractionallySizedBox(
-              widthFactor: .8,
-              child: ElevatedButton(
-                onPressed: onAct,
-                child: BlocBuilder<PostBloc, PostState>(
-                  builder: (context, state) {
-                    if (state.event == PostEvents.addStart ||
-                        state.event == PostEvents.updateStart) {
-                      return Loadings.cupertino(context);
-                    }
+        child: GestureDetector(
+          onTap: () => setState(() => contentNode.unfocus()),
+          child: Scaffold(
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: FractionallySizedBox(
+                widthFactor: .8,
+                child: ElevatedButton(
+                  onPressed: onAct,
+                  child: BlocBuilder<PostBloc, PostState>(
+                    builder: (context, state) {
+                      if (state.event == PostEvents.addStart ||
+                          state.event == PostEvents.updateStart) {
+                        return Loadings.cupertino(context);
+                      }
 
-                    final title = {
-                      WriteType.edit: 'Save Changes',
-                      WriteType.create: 'Create new post'
-                    }[widget.type];
+                      final title = {
+                        WriteType.edit: 'Save Changes',
+                        WriteType.create: 'Create new post'
+                      }[widget.type];
 
-                    return Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        title ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  },
+                      return Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          title ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          appBar: AppBar(
-            bottom: const TabBar(
-              overlayColor: null,
-              indicatorWeight: 5,
-              tabs: [
-                Tab(text: "Edit"),
-                Tab(text: "Preview"),
-              ],
+            appBar: AppBar(
+              bottom: const TabBar(
+                overlayColor: null,
+                indicatorWeight: 5,
+                tabs: [
+                  Tab(text: "Edit"),
+                  Tab(text: "Preview"),
+                ],
+              ),
+              title: Builder(builder: (context) {
+                if (widget.type == WriteType.edit) {
+                  return Text('#${widget.model?.id}');
+                }
+
+                return const Text('Create New Post');
+              }),
             ),
-            title: Builder(builder: (context) {
-              if (widget.type == WriteType.edit) {
-                return Text('#${widget.model?.id}');
-              }
+            body: TabBarView(children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(10),
+                child: Column(children: [
+                  EditableImageField(
+                    formKey: coverKey,
+                    controller: coverController,
+                    validator: (v) {
+                      final url = RegExp(
+                        r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+',
+                      );
 
-              return const Text('Create New Post');
-            }),
-          ),
-          body: TabBarView(children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(10),
-              child: Column(children: [
-                EditableImageField(
-                  formKey: coverKey,
-                  controller: coverController,
-                  validator: (v) {
-                    final url = RegExp(
-                      r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+',
-                    );
-
-                    if (url.hasMatch(v ?? '')) return null;
-                    return "Invalid URL";
-                  },
-                ),
-                const SizedBox(height: 10),
-                const Divider(indent: 30, endIndent: 30),
-                const SizedBox(height: 10),
-                EditableTile(
-                  hint: 'Post Title',
-                  formKey: titleKey,
-                  controller: titleController,
-                  validator: (v) {
-                    if (v != null && v.isNotEmpty) return null;
-                    return "Title couldn't be empty";
-                  },
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                      if (url.hasMatch(v ?? '')) return null;
+                      return "Invalid URL";
+                    },
                   ),
-                ),
-                EditableTile(
-                  hint: 'Post Description ...',
-                  formKey: descriptionKey,
-                  controller: descriptionController,
-                  validator: (v) {
-                    if (v != null && v.isNotEmpty) return null;
-                    return "Short description couldn't be empty";
-                  },
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(.5),
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Divider(indent: 30, endIndent: 30),
-                const SizedBox(height: 10),
-                EditableTile(
-                  hint: '< the content as html >',
-                  formKey: contentKey,
-                  controller: contentController,
-                  validator: (v) {
-                    if (v != null && v.length > 50) return null;
-                    return "Content couldn't be this short";
-                  },
-                  style: const TextStyle(color: Colors.black, fontSize: 14),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black.withOpacity(.1),
-                      width: 1.2,
+                  const SizedBox(height: 10),
+                  const Divider(indent: 30, endIndent: 30),
+                  const SizedBox(height: 10),
+                  EditableTile(
+                    hint: 'Post Title',
+                    formKey: titleKey,
+                    controller: titleController,
+                    validator: (v) {
+                      if (v != null && v.isNotEmpty) return null;
+                      return "Title couldn't be empty";
+                    },
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              ]),
-            ),
-            PostPreview(model: generatePost()),
-          ]),
+                  EditableTile(
+                    hint: 'Post Description ...',
+                    formKey: descriptionKey,
+                    controller: descriptionController,
+                    validator: (v) {
+                      if (v != null && v.isNotEmpty) return null;
+                      return "Short description couldn't be empty";
+                    },
+                    style: TextStyle(
+                      color: Colors.black.withOpacity(.5),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Divider(indent: 30, endIndent: 30),
+                  const SizedBox(height: 10),
+                  Column(children: [
+                    EditableTile(
+                      hint: '< the content as html >',
+                      node: contentNode,
+                      formKey: contentKey,
+                      controller: contentController,
+                      validator: (v) {
+                        if (v != null && v.length > 50) return null;
+                        return "Content couldn't be this short";
+                      },
+                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black.withOpacity(.1),
+                          width: 1.2,
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5),
+                        ),
+                      ),
+                    ),
+                    if (contentNode.hasFocus)
+                      HtmlTagBar(
+                        controller: contentController,
+                        focusNode: contentNode,
+                      ),
+                  ]),
+                ]),
+              ),
+              PostPreview(model: generatePost()),
+            ]),
+          ),
         ),
       ),
     );

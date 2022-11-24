@@ -14,6 +14,7 @@ class EditableTile extends StatelessWidget {
   final String? hint;
   final InputBorder border;
   final String? Function(String?)? validator;
+  final FocusNode? node;
 
   const EditableTile({
     super.key,
@@ -24,6 +25,7 @@ class EditableTile extends StatelessWidget {
     this.hint,
     this.border = InputBorder.none,
     this.validator,
+    this.node,
   });
 
   @override
@@ -32,6 +34,7 @@ class EditableTile extends StatelessWidget {
       key: formKey,
       child: TextFormField(
         maxLines: null,
+        focusNode: node,
         readOnly: readOnly,
         controller: controller,
         style: style,
