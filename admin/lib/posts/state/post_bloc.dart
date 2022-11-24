@@ -23,8 +23,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   // ignore: invalid_use_of_visible_for_testing_member
   void clearCache() => emit(PostState.unknown());
 
+  /// A wrapper call method for fetch event.
+  ///
+  /// In case of being [skills] null or empty, fetches them again.
+  Future<void> autoFetch() async {
+    final posts = state.posts;
+    if (posts == null || posts.isEmpty) add(PostEvent.fetch());
+  }
+
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
+    await postService.api.reloadHttpBearer();
+
     switch (event.type) {
       case PostEvents.fetchStart:
         yield* mapEventToFetchStart(event);
@@ -112,7 +122,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     try {
       final Post post = event.payload;
 
-      final res = await postService.add(event.payload);
+      await postService.add(event.payload);
 
       final List<Post> posts = state.posts ?? [];
       posts.insert(0, post);
@@ -120,7 +130,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       postState = state.copyWith(
         loading: false,
         posts: posts,
-        event: res.data == null ? PostEvents.addError : PostEvents.addSuccess,
+        event: PostEvents.addSuccess,
       );
     } on Exception catch (exception) {
       postState = state.copyWith(
@@ -175,7 +185,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       final String field = event.payload['field'];
       final Post post = event.payload['post'];
 
-      final res = await postService.update(id, field, post);
+      if (field.isNotEmpty) {
+        await postService.update(id, field, post);
+      } else {
+        final index = state.posts?.indexWhere((p) => p.id == post.id) ?? -1;
+        final currentPost = (state.posts ?? [])[index];
+
+        for (var editable in currentPost.updatedFields(post)) {
+          await postService.update(id, editable, post);
+        }
+      }
 
       final List<Post> posts = state.posts ?? [];
       final idx = posts.indexWhere((p) => p.id == id);
@@ -187,9 +206,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       postState = state.copyWith(
         loading: false,
         posts: posts,
-        event: res.data == null
-            ? PostEvents.updateError
-            : PostEvents.updateSuccess,
+        event: PostEvents.updateSuccess,
       );
     } on Exception catch (exception) {
       postState = state.copyWith(

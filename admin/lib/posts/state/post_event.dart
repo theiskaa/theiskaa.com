@@ -41,7 +41,7 @@ class PostEvent {
   }
 
   PostEvent.add(Post this.payload) {
-    type = PostEvents.getStart;
+    type = PostEvents.addStart;
   }
 
   PostEvent.delete(String this.payload) {

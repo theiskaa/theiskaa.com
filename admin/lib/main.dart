@@ -5,10 +5,34 @@
 //
 
 import 'package:admin/app.dart';
-import 'package:admin/register_web_webview.dart';
+import 'package:admin/core/bloc_observer.dart';
+import 'package:admin/firebase_options.dart';
+import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
-  registerWebViewWebImplementation();
+// Logins to admin user directly.
+Future<void> signin() async {
+  await dotenv.load(fileName: ".env");
+
+  await FirebaseAuth.instance.signInWithEmailAndPassword(
+    email: dotenv.env['EMAIL']!,
+    password: dotenv.env['PASSWORD']!,
+  );
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await signin();
+
+  Bloc.observer = AppStateObserver();
+
   runApp(const App());
 }

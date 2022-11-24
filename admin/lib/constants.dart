@@ -5,5 +5,5 @@
 //
 
 class ENV {
-    static String route = 'http://localhost:9090/';
+  static String route = 'https://api.theiskaa.com/';
 }
