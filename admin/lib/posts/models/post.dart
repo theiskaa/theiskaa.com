@@ -86,6 +86,28 @@ class Post {
         'content': content,
       };
 
-  static List<String> get editablefields =>
-      ['title', 'description', 'cover', 'date', 'content'];
+  static List<String> get editablefields => [
+        'title',
+        'description',
+        'cover',
+        'date',
+        'content',
+      ];
+
+  /// Generates a list of string of editable fields that is
+  /// different between [this] model and [model].
+  List<String> updatedFields(Post model) {
+    final fields = <String>[];
+
+    if (title != model.title) fields.add('title');
+    if (description != model.description) {
+      fields.add('description');
+    }
+
+    if (cover != model.cover) fields.add('cover');
+    if (date != model.date) fields.add('date');
+    if (content != model.content) fields.add('content');
+
+    return fields;
+  }
 }

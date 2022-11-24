@@ -188,7 +188,10 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       if (field.isNotEmpty) {
         await postService.update(id, field, post);
       } else {
-        for (var editable in Post.editablefields) {
+        final index = state.posts?.indexWhere((p) => p.id == post.id) ?? -1;
+        final currentPost = (state.posts ?? [])[index];
+
+        for (var editable in currentPost.updatedFields(post)) {
           await postService.update(id, editable, post);
         }
       }
