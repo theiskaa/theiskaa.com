@@ -10,6 +10,7 @@ import 'package:admin/posts/view/post_preview.dart';
 import 'package:admin/posts/view/widgets/editable_image_field.dart';
 import 'package:admin/posts/view/widgets/editable_tile.dart';
 import 'package:admin/widgets/loadings.dart';
+import 'package:admin/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -43,8 +44,7 @@ class _PostWriteState extends State<PostWrite> {
   late TextEditingController contentController;
   late TextEditingController coverController;
 
-
-  void updateState() => setState((){});
+  void updateState() => setState(() {});
 
   @override
   void initState() {
@@ -77,12 +77,19 @@ class _PostWriteState extends State<PostWrite> {
   }
 
   void onAct() {
-    //
-    // TODO: add form key validation before executing the action.
-    //
+    final validations = [
+      titleKey.currentState?.validate() ?? false,
+      descriptionKey.currentState?.validate() ?? false,
+      contentKey.currentState?.validate() ?? false,
+      coverKey.currentState?.validate() ?? false,
+    ];
+
+    if (validations.contains(false)) {
+      ViewUtils.showSnack(context, title: 'Some fields are invalid');
+      return;
+    }
 
     final post = generatePost();
-
     final PostEvent event = {
       WriteType.create: PostEvent.add(post),
       WriteType.edit: PostEvent.update(
@@ -95,95 +102,135 @@ class _PostWriteState extends State<PostWrite> {
     postBloc.add(event);
   }
 
+  // The general state listener method for current page.
+  void stateListener(BuildContext context, PostState state) {
+    if (state.event == PostEvents.addSuccess) {
+      titleController.clear();
+      descriptionController.clear();
+      contentController.clear();
+      coverController.clear();
+
+      postBloc.add(PostEvent.fetch());
+      setState(() {});
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        bottomNavigationBar: FractionallySizedBox(
-          widthFactor: .8,
-          child: ElevatedButton(
-            onPressed: onAct,
-            child: BlocBuilder<PostBloc, PostState>(
-              builder: (context, state) {
-                if (state.event == PostEvents.addStart ||
-                    state.event == PostEvents.updateStart) {
-                  return Loadings.cupertino(context);
-                }
+    return BlocListener<PostBloc, PostState>(
+      listener: stateListener,
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          bottomNavigationBar: FractionallySizedBox(
+            widthFactor: .8,
+            child: ElevatedButton(
+              onPressed: onAct,
+              child: BlocBuilder<PostBloc, PostState>(
+                builder: (context, state) {
+                  if (state.event == PostEvents.addStart ||
+                      state.event == PostEvents.updateStart) {
+                    return Loadings.cupertino(context);
+                  }
 
-                final title = {
-                  WriteType.edit: 'Save Changes',
-                  WriteType.create: 'Create new post'
-                }[widget.type];
+                  final title = {
+                    WriteType.edit: 'Save Changes',
+                    WriteType.create: 'Create new post'
+                  }[widget.type];
 
-                return Text(title ?? '');
-              },
+                  return Text(title ?? '');
+                },
+              ),
             ),
           ),
-        ),
-        appBar: AppBar(
-          bottom: const TabBar(
-            overlayColor: null,
-            indicatorWeight: 5,
-            tabs: [
-              Tab(text: "Edit"),
-              Tab(text: "Preview"),
-            ],
-          ),
-          title: Builder(builder: (context) {
-            if (widget.type == WriteType.edit) {
-              return Text('#${widget.model?.id}');
-            }
+          appBar: AppBar(
+            bottom: const TabBar(
+              overlayColor: null,
+              indicatorWeight: 5,
+              tabs: [
+                Tab(text: "Edit"),
+                Tab(text: "Preview"),
+              ],
+            ),
+            title: Builder(builder: (context) {
+              if (widget.type == WriteType.edit) {
+                return Text('#${widget.model?.id}');
+              }
 
-            return const Text('Create New Post');
-          }),
-        ),
-        body: TabBarView(children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(10),
-            child: Column(children: [
-              EditableImageField(
-                formKey: coverKey,
-                controller: coverController,
-              ),
-              EditableTile(
-                hint: 'Post Title',
-                formKey: titleKey,
-                controller: titleController,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
+              return const Text('Create New Post');
+            }),
+          ),
+          body: TabBarView(children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(10),
+              child: Column(children: [
+                EditableImageField(
+                  formKey: coverKey,
+                  controller: coverController,
+                  validator: (v) {
+                    final url = RegExp(
+                      r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+',
+                    );
+
+                    if (url.hasMatch(v ?? '')) return null;
+                    return "Invalid URL";
+                  },
                 ),
-              ),
-              EditableTile(
-                hint: 'Post Description ...',
-                formKey: descriptionKey,
-                controller: descriptionController,
-                style: TextStyle(
-                  color: Colors.black.withOpacity(.5),
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Divider(indent: 30, endIndent: 30),
-              const SizedBox(height: 10),
-              EditableTile(
-                hint: '< the content as html >',
-                formKey: contentKey,
-                controller: contentController,
-                style: const TextStyle(color: Colors.black, fontSize: 14),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.black.withOpacity(.1),
-                    width: 1.2,
+                const SizedBox(height: 10),
+                const Divider(indent: 30, endIndent: 30),
+                const SizedBox(height: 10),
+                EditableTile(
+                  hint: 'Post Title',
+                  formKey: titleKey,
+                  controller: titleController,
+                  validator: (v) {
+                    if (v != null && v.isNotEmpty) return null;
+                    return "Title couldn't be empty";
+                  },
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
-            ]),
-          ),
-          PostPreview(model: generatePost()),
-        ]),
+                EditableTile(
+                  hint: 'Post Description ...',
+                  formKey: descriptionKey,
+                  controller: descriptionController,
+                  validator: (v) {
+                    if (v != null && v.isNotEmpty) return null;
+                    return "Short description couldn't be empty";
+                  },
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(.5),
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Divider(indent: 30, endIndent: 30),
+                const SizedBox(height: 10),
+                EditableTile(
+                  hint: '< the content as html >',
+                  formKey: contentKey,
+                  controller: contentController,
+                  validator: (v) {
+                    if (v != null && v.length > 50) return null;
+                    return "Content couldn't be this short";
+                  },
+                  style: const TextStyle(color: Colors.black, fontSize: 14),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black.withOpacity(.1),
+                      width: 1.2,
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+            PostPreview(model: generatePost()),
+          ]),
+        ),
       ),
     );
   }

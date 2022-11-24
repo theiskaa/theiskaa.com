@@ -40,7 +40,18 @@ class PostCard extends StatelessWidget {
         onTap: onPressed,
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: SizedBox(height: 80, child: Image.network(model.cover!)),
+          child: SizedBox(
+            height: 80,
+            child: Builder(
+              builder: (context) {
+                if (model.cover!.isEmpty) {
+                  return Image.asset('assets/cover.png');
+                }
+
+                return Image.network(model.cover!);
+              },
+            ),
+          ),
         ),
         title: Column(children: [
           Align(

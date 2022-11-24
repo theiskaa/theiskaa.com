@@ -13,6 +13,7 @@ class EditableTile extends StatelessWidget {
   final bool readOnly;
   final String? hint;
   final InputBorder border;
+  final String? Function(String?)? validator;
 
   const EditableTile({
     super.key,
@@ -22,6 +23,7 @@ class EditableTile extends StatelessWidget {
     this.readOnly = false,
     this.hint,
     this.border = InputBorder.none,
+    this.validator,
   });
 
   @override
@@ -33,6 +35,7 @@ class EditableTile extends StatelessWidget {
         readOnly: readOnly,
         controller: controller,
         style: style,
+        validator: validator,
         decoration: InputDecoration(
           hintText: hint,
           border: border,
