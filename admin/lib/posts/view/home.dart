@@ -40,15 +40,29 @@ class _PostHomeState extends State<PostsHome> {
           if (isSuccess || isError) Navigator.pop(context);
         },
         child: AlertDialog(
-          title: Text('Do you want to delete post : "${post.id}" ?'),
+          title: RichText(
+            text: TextSpan(
+              text: 'Do you want to delete post: ',
+              style: const TextStyle(fontSize: 16),
+              children: [
+                TextSpan(
+                  text: '${post.id}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
           actions: [
-            TextButton(
+            ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () => Navigator.pop(context),
             ),
             BlocBuilder<PostBloc, PostState>(builder: (context, state) {
               final isLoading = state.event == PostEvents.deleteStart;
-              return TextButton(
+              return ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+                ),
                 child: Builder(builder: (context) {
                   if (isLoading) return Loadings.cupertino(context);
                   return const Text('Delete');

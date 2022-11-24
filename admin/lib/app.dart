@@ -6,8 +6,10 @@
 
 import 'package:admin/core/themes.dart';
 import 'package:admin/info/state/info_bloc.dart';
+import 'package:admin/info/view/home.dart';
 import 'package:admin/posts/state/post_bloc.dart';
-import 'package:admin/widgets/navigator_button.dart';
+import 'package:admin/posts/view/home.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,21 +39,54 @@ class MainWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('theiskaa.com admin')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Row(
-              children: const [
-                NavigatorButton(route: 'info'),
-                SizedBox(width: 10),
-                NavigatorButton(route: 'posts'),
-              ],
+      body: Column(children: [
+        Expanded(
+          child: CupertinoButton(
+            pressedOpacity: .8,
+            padding: EdgeInsets.zero,
+            onPressed: () async => await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const InfoHome()),
             ),
-          ],
+            child: Container(
+              color: Colors.yellow,
+              child: const Center(
+                child: Text(
+                  'Info',
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
-      ),
+        Expanded(
+          child: CupertinoButton(
+            pressedOpacity: .8,
+            padding: EdgeInsets.zero,
+            onPressed: () async => await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostsHome()),
+            ),
+            child: Container(
+              color: Colors.black,
+              child: const Center(
+                child: Text(
+                  'Posts',
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.yellow,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ]),
     );
   }
 }
