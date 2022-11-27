@@ -23,6 +23,14 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   // ignore: invalid_use_of_visible_for_testing_member
   void clearCache() => emit(InfoState.unknown());
 
+  /// A wrapper call method for get event.
+  ///
+  /// In case of being [info] null, fetches them again.
+  Future<void> autoFetch() async {
+    final posts = state.info;
+    if (posts == null) add(InfoEvent.get());
+  }
+
   @override
   Stream<InfoState> mapEventToState(InfoEvent event) async* {
     switch (event.type) {
@@ -31,6 +39,9 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
         break;
       case InfoEvents.updateStart:
         yield* mapEventToUpdateStart(event);
+        break;
+      case InfoEvents.deleteStart:
+        yield* mapEventToDeleteStart(event);
         break;
       default:
         //ignore:avoid_print
@@ -45,11 +56,12 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
 
     try {
       final res = await infoService.get();
+      final info = Info.fromJson(res.data);
 
       infoState = state.copyWith(
         loading: false,
-        info: res.data,
-        event: res.data == null ? InfoEvents.getError : InfoEvents.getSuccess,
+        info: info,
+        event: InfoEvents.getSuccess,
       );
     } on Exception catch (exception) {
       infoState = state.copyWith(
@@ -74,10 +86,10 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       await infoService.update(field, info);
 
       var currentInfo = state.info;
-      if(currentInfo == null) {
-          currentInfo = info;
+      if (currentInfo == null) {
+        currentInfo = info;
       } else {
-          currentInfo.mergeWith(info);
+        currentInfo.mergeWith(info);
       }
 
       infoState = state.copyWith(
@@ -96,7 +108,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     yield infoState;
   }
 
-    Stream<InfoState> mapEventToDeleteStart(InfoEvent event) async* {
+  Stream<InfoState> mapEventToDeleteStart(InfoEvent event) async* {
     var infoState = state.copyWith(event: event.type, loading: true);
 
     yield infoState;
@@ -107,8 +119,8 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       await infoService.delete(field);
 
       var currentInfo = state.info;
-      if(currentInfo != null) {
-          currentInfo = currentInfo.removeField(field);
+      if (currentInfo != null) {
+        currentInfo = currentInfo.removeField(field);
       }
 
       infoState = state.copyWith(
@@ -126,5 +138,4 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
 
     yield infoState;
   }
-
 }

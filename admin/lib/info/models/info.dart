@@ -6,9 +6,9 @@
 
 class Info {
   final String? picture;
-  final List<Link>? greeting;
-  final List<Link>? career;
-  final List<Link>? contact;
+  final List<dynamic>? greeting;
+  final List<dynamic>? career;
+  final List<dynamic>? contact;
 
   const Info({
     this.picture,
@@ -19,9 +19,9 @@ class Info {
 
   Info copyWith({
     String? picture,
-    List<Link>? greeting,
-    List<Link>? career,
-    List<Link>? contact,
+    List<dynamic>? greeting,
+    List<dynamic>? career,
+    List<dynamic>? contact,
   }) {
     return Info(
       picture: picture ?? this.picture,
@@ -75,7 +75,7 @@ class Info {
 // If the [URL] is empty, link represents non-linkable simple text element.
 // And, if title is empty, link represents empty line.
 class Link {
-  // title is the main domain of [Link] structure.
+  // title is the main domain of [dynamic] structure.
   final String? title;
 
   // The reference URL provider for [title].
@@ -91,7 +91,7 @@ class Link {
   //  - p -> <p>{}</p>
   final String? style;
 
-  // The sub links of current link.
+  // The sub links of current dynamic.
   final List<Link>? children;
 
   const Link({this.title, this.url, this.style, this.children});
