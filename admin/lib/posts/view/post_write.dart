@@ -11,6 +11,7 @@ import 'package:admin/widgets/fields.dart';
 import 'package:admin/posts/view/widgets/html_tag_editor.dart';
 import 'package:admin/widgets/loadings.dart';
 import 'package:admin/widgets/utils.dart';
+import 'package:admin/core/exts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -182,11 +183,7 @@ class _PostWriteState extends State<PostWrite> {
                     formKey: coverKey,
                     controller: coverController,
                     validator: (v) {
-                      final url = RegExp(
-                        r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+',
-                      );
-
-                      if (url.hasMatch(v ?? '')) return null;
+                      if ((v ?? '').isURL()) return null;
                       return "Invalid URL";
                     },
                   ),
