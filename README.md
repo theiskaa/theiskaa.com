@@ -5,9 +5,7 @@ The official source code of my personal website. (API/client combined).
 ### Tech Stack: 
 - API: **Go**
 - Web: **Rust**
-- Rendering: 
-  - **Info**: Custom JSON data instead of markdown and HTML.
-  - **Post**: Pure HTML as post content.
+- Rendering: **Pure HTML**
 - Deployment: **Digital Ocean**
 - Hosting: **Cloud Flare**
 
