@@ -5,6 +5,7 @@ The official source code of my personal website. (API/client combined).
 ### Tech Stack: 
 - API: **Go**
 - Web: **Rust**
+- Admin: **Dart/Flutter**
 - Rendering: **Pure HTML**
 - Deployment: **Digital Ocean**
 - Hosting: **Cloud Flare**
@@ -19,9 +20,14 @@ And `/posts` is the endpoint that manages the blog posts of mine.
 ## Web
 Written in Rust and uses [Yew](https://yew.rs) framework. Implements [yew_router](https://yew.rs/docs/next/concepts/router) for routing, [stylist](https://crates.io/crates/stylist) for styling, and custom request service wrapper(dio) to [reqwest](https://crates.io/crates/reqwest) for HTTP requesting.
 
+## Admin
+Written in Dart and uses [Flutter](https://flutter.dev). Uses custom first-party API for making calls. Has two segments: **Info** and **Posts*, where: 
+- **Info** is a single editable page.
+- **Posts** is a page of list for all published blog posts, where you can remove, edit and create new posts.
+
 ---
 
-<img alt="web" src="https://user-images.githubusercontent.com/59066341/200322993-ef226839-5b42-4d2d-a8a7-7e7d7ec20a86.png">
+<img alt="web" src="https://user-images.githubusercontent.com/59066341/210007611-724f3b49-375c-426e-a2f4-9d3c15591a17.png">
 
 <p align="center">
 Design inspired from <a href="https://thorstenball.com"> thorstenball.com </a> 'cause of its simplicity and easy implementation in rust. <br>
