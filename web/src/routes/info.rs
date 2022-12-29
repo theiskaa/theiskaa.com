@@ -4,13 +4,12 @@
 // that can be found in the LICENSE file.
 //
 
+use crate::components::HtmlRender;
 use crate::components::{ErrorCard, Loading};
 use crate::models::{Error, InfoModel};
 use crate::services::InfoService;
-use crate::utils::ToHtml;
 
 use yew::prelude::*;
-use yew::virtual_dom::{VList, VNode};
 
 #[function_component(Info)]
 pub fn info() -> Html {
@@ -37,7 +36,7 @@ pub fn info() -> Html {
     }
 
     let info_widget_impl = match info_state.as_ref() {
-        Some(v) => html! { <InfoWidget info={v.clone()}/> },
+        Some(v) => html! {  <HtmlRender id={String::from("main")} html={ v.clone().data.clone() }/> },
         None => match error_state.as_ref() {
             Some(e) => html! { <ErrorCard model={e.clone()}/> },
             None => html! { <Loading/> },
@@ -45,25 +44,4 @@ pub fn info() -> Html {
     };
 
     html! { info_widget_impl }
-}
-
-#[derive(Properties, PartialEq)]
-pub struct InfoWidgetProps {
-    pub info: InfoModel,
-}
-
-#[function_component(InfoWidget)]
-fn info_widget(InfoWidgetProps { info }: &InfoWidgetProps) -> Html {
-    let children: Vec<VNode> = vec![
-        html! { <img class="avatar" src={ info.clone().picture } alt="My picture" title="profile picture"/> },
-        html! { <p style="margin-top: 0; line-height: 1.2em;"> { info.clone().greeting.to_html() } </p> },
-        html! { <p> { info.clone().career.to_html() } </p> },
-        html! { <div class="clearfix"></div> },
-        html! { <h2 id="contact">{"Contact"}</h2> },
-        html! { <div class="contact"> { info.clone().contact.to_html() } </div> },
-    ];
-
-    let collected_vlist = VList::with_children(children, None);
-
-    html! { collected_vlist.clone() }
 }
