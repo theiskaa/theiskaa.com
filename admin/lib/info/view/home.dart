@@ -16,7 +16,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:admin/core/exts.dart';
 
 class InfoHome extends StatefulWidget {
-  const InfoHome({super.key});
+  final Info? info;
+  const InfoHome({super.key, this.info});
 
   @override
   State<StatefulWidget> createState() => _InfoHomeState();
@@ -30,14 +31,17 @@ class _InfoHomeState extends State<InfoHome> {
   final pictureKey = GlobalKey<FormState>();
   final dataKey = GlobalKey<FormState>();
 
-  var pictureController = TextEditingController();
-  var dataController = TextEditingController();
+  late TextEditingController pictureController;
+  late TextEditingController dataController;
 
   void updateState() => setState(() {});
 
   @override
   void initState() {
     infoBloc = BlocProvider.of<InfoBloc>(context);
+
+    pictureController = TextEditingController(text: widget.info?.picture);
+    dataController = TextEditingController(text: widget.info?.data);
 
     pictureController.addListener(updateState);
     dataController.addListener(updateState);

@@ -52,7 +52,9 @@ class MainWrapper extends StatelessWidget {
 
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const InfoHome()),
+                  MaterialPageRoute(
+                    builder: (context) => InfoHome(info: state.info),
+                  ),
                 );
               },
               child: Container(
