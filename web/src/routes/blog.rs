@@ -73,7 +73,7 @@ pub fn blog_list() -> Html {
         }
     };
 
-    html! { blog_widget_impl }
+    html! { <div class="main"> { blog_widget_impl.clone() } </div> }
 }
 
 #[derive(Clone, Properties, PartialEq)]
@@ -116,7 +116,7 @@ pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
                 html! { <h1> { v.clone().title.clone() } </h1> },
                 html! { <p class="meta"> { v.clone().date.clone() } </p> },
                 html! { <RainbowDivider/> },
-                html! { <HtmlRender html={ v.clone().content.clone() }/>},
+                html! { <HtmlRender id={String::from("")} html={ v.clone().content.clone() }/>},
             ];
 
             let collected_vlist = VList::with_children(children, None);
@@ -124,5 +124,5 @@ pub fn blog_page(BlogPageProps { id }: &BlogPageProps) -> Html {
         }
     };
 
-    html! { blog_widget_impl }
+    html! { <div class="main"> { blog_widget_impl.clone() } </div> }
 }
