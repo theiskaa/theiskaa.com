@@ -34,7 +34,7 @@ func NewInfoFirebaseService(db *firestore.Client, auth *auth.Client) *InfoFireba
 }
 
 func (info *InfoFirebaseService) Get(r *http.Request) (interface{}, *pkg.AppError) {
-	data, err := pkg.GetDocumentsData(*info.collection, "me")
+	data, err := pkg.GetDocumentsData(*info.collection, "me2")
 	if err != nil {
 		appErr := pkg.FromFirebaseError(err)
 		return nil, &appErr
@@ -63,44 +63,7 @@ func (info *InfoFirebaseService) Update(r *http.Request) (interface{}, *pkg.AppE
 	transformedData := models.TransformInfoBody(reqBody)
 
 	opt := firestore.Merge([]string{field})
-	if _, writingErr := info.collection.Doc("me").Set(ctx, transformedData, opt); writingErr != nil {
-		appErr := pkg.FromFirebaseError(writingErr)
-		return nil, &appErr
-	}
-
-	return nil, nil
-}
-
-func (info *InfoFirebaseService) Delete(r *http.Request) (interface{}, *pkg.AppError) {
-	if _, err := pkg.VerifyFireToken(r.Header.Get("Authorization"), info.auth); err != nil {
-		return nil, err
-	}
-
-	ctx := context.Background()
-
-	// Get current document data.
-	data, err := pkg.GetDocumentsData(*info.collection, "me")
-	if err != nil {
-		appErr := pkg.FromFirebaseError(err)
-		return nil, &appErr
-	}
-
-	// Take the field's name, that has to be deleted.
-	field := mux.Vars(r)["field"]
-	if len(field) < 1 {
-		return nil, &pkg.InvalidRequestBody
-	}
-
-	// Remove the field from data if it exists.
-	if _, ok := data[field]; ok {
-		delete(data, field)
-	} else {
-		return nil, &pkg.FieldNotExists
-	}
-
-	// Overwrites the whole document with current modified, data variable.
-	// TODO: Instead use, `firestore.Merge([]string{field})` with `firestore.Delete`
-	if _, writingErr := info.collection.Doc("me").Set(ctx, data); writingErr != nil {
+	if _, writingErr := info.collection.Doc("me2").Set(ctx, transformedData, opt); writingErr != nil {
 		appErr := pkg.FromFirebaseError(writingErr)
 		return nil, &appErr
 	}

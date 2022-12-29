@@ -9,5 +9,5 @@ mod info;
 mod post;
 
 pub use error::*;
-pub use info::{InfoModel, Link};
+pub use info::InfoModel;
 pub use post::PostModel;
