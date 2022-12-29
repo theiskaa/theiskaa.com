@@ -19,9 +19,4 @@ class InfoService {
   Future<Response> update(String field, Info info) async {
     return await api.http.put('$path/$field', data: info.toJson());
   }
-
-  /// Gets the info model via response.
-  Future<Response> delete(String field) async {
-    return await api.http.delete('$path/$field');
-  }
 }

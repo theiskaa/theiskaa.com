@@ -14,10 +14,6 @@ enum InfoEvents {
     updateStart,
     updateSuccess,
     updateError,
-
-    deleteStart,
-    deleteSuccess,
-    deleteError,
 }
 
 class InfoEvent {
@@ -31,9 +27,5 @@ class InfoEvent {
   InfoEvent.update(String field, Info info) {
     type = InfoEvents.updateStart;
     payload = {'field': field, 'info': info};
-  }
-
-  InfoEvent.delete(String this.payload) {
-    type = InfoEvents.deleteStart;
   }
 }

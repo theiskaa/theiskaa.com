@@ -40,9 +40,6 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       case InfoEvents.updateStart:
         yield* mapEventToUpdateStart(event);
         break;
-      case InfoEvents.deleteStart:
-        yield* mapEventToDeleteStart(event);
-        break;
       default:
         //ignore:avoid_print
         print('Found no implementation for event: ${event.type}');
@@ -101,37 +98,6 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       infoState = state.copyWith(
         loading: false,
         event: InfoEvents.updateError,
-        error: ErrorModel.fromException(exception),
-      );
-    }
-
-    yield infoState;
-  }
-
-  Stream<InfoState> mapEventToDeleteStart(InfoEvent event) async* {
-    var infoState = state.copyWith(event: event.type, loading: true);
-
-    yield infoState;
-
-    try {
-      final String field = event.payload['field'];
-
-      await infoService.delete(field);
-
-      var currentInfo = state.info;
-      if (currentInfo != null) {
-        currentInfo = currentInfo.removeField(field);
-      }
-
-      infoState = state.copyWith(
-        loading: false,
-        info: currentInfo,
-        event: InfoEvents.deleteSuccess,
-      );
-    } on Exception catch (exception) {
-      infoState = state.copyWith(
-        loading: false,
-        event: InfoEvents.deleteError,
         error: ErrorModel.fromException(exception),
       );
     }
