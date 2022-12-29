@@ -41,31 +41,35 @@ class MainWrapper extends StatelessWidget {
     return Scaffold(
       body: Column(children: [
         Expanded(
-          child: CupertinoButton(
-            pressedOpacity: .8,
-            padding: EdgeInsets.zero,
-            onPressed: () async {
-              context.read<InfoBloc>().add(InfoEvent.get());
+          child: BlocBuilder<InfoBloc, InfoState>(builder: (context, state) {
+            return CupertinoButton(
+              pressedOpacity: .8,
+              padding: EdgeInsets.zero,
+              onPressed: () async {
+                if (state.info == null) {
+                  context.read<InfoBloc>().add(InfoEvent.get());
+                }
 
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const InfoHome()),
-              );
-            },
-            child: Container(
-              color: Colors.yellow,
-              child: const Center(
-                child: Text(
-                  'Info',
-                  style: TextStyle(
-                    fontSize: 32,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const InfoHome()),
+                );
+              },
+              child: Container(
+                color: Colors.yellow,
+                child: const Center(
+                  child: Text(
+                    'Info',
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ),
         Expanded(
           child: CupertinoButton(

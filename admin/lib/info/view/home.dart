@@ -7,7 +7,7 @@
 import 'package:admin/info/models/info.dart';
 import 'package:admin/info/state/info_bloc.dart';
 import 'package:admin/info/view/preview.dart';
-import 'package:admin/posts/view/widgets/html_tag_editor.dart';
+import 'package:admin/widgets/html_tag_editor.dart';
 import 'package:admin/widgets/fields.dart';
 import 'package:admin/widgets/loadings.dart';
 import 'package:admin/widgets/utils.dart';
