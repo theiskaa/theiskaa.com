@@ -25,3 +25,14 @@ extension WrapWith on TextEditingController {
     );
   }
 }
+
+extension Validation on String {
+  /// Checks if current([this]] string is valid URL or not.
+  bool isURL() {
+    final url = RegExp(
+      r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+',
+    );
+
+    return url.hasMatch(this);
+  }
+}

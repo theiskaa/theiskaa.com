@@ -23,8 +23,18 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   // ignore: invalid_use_of_visible_for_testing_member
   void clearCache() => emit(InfoState.unknown());
 
+  /// A wrapper call method for get event.
+  ///
+  /// In case of being [info] null, fetches them again.
+  Future<void> autoFetch() async {
+    final posts = state.info;
+    if (posts == null) add(InfoEvent.get());
+  }
+
   @override
   Stream<InfoState> mapEventToState(InfoEvent event) async* {
+    await infoService.api.reloadHttpBearer();
+
     switch (event.type) {
       case InfoEvents.getStart:
         yield* mapEventToGetStart(event);
@@ -45,11 +55,12 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
 
     try {
       final res = await infoService.get();
+      final info = Info.fromJson(res.data);
 
       infoState = state.copyWith(
         loading: false,
-        info: res.data,
-        event: res.data == null ? InfoEvents.getError : InfoEvents.getSuccess,
+        info: info,
+        event: InfoEvents.getSuccess,
       );
     } on Exception catch (exception) {
       infoState = state.copyWith(
@@ -71,13 +82,20 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       final Info info = event.payload['info'];
       final String field = event.payload['field'];
 
-      await infoService.update(field, info);
+      if (field.isNotEmpty) {
+        await infoService.update(field, info);
+      } else {
+        for (var editable in state.info?.updatedFields(info) ?? []) {
+          await infoService.update(editable, info);
+        }
+      }
+
 
       var currentInfo = state.info;
-      if(currentInfo == null) {
-          currentInfo = info;
+      if (currentInfo == null) {
+        currentInfo = info;
       } else {
-          currentInfo.mergeWith(info);
+        currentInfo.mergeWith(info);
       }
 
       infoState = state.copyWith(
@@ -95,36 +113,4 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
 
     yield infoState;
   }
-
-    Stream<InfoState> mapEventToDeleteStart(InfoEvent event) async* {
-    var infoState = state.copyWith(event: event.type, loading: true);
-
-    yield infoState;
-
-    try {
-      final String field = event.payload['field'];
-
-      await infoService.delete(field);
-
-      var currentInfo = state.info;
-      if(currentInfo != null) {
-          currentInfo = currentInfo.removeField(field);
-      }
-
-      infoState = state.copyWith(
-        loading: false,
-        info: currentInfo,
-        event: InfoEvents.deleteSuccess,
-      );
-    } on Exception catch (exception) {
-      infoState = state.copyWith(
-        loading: false,
-        event: InfoEvents.deleteError,
-        error: ErrorModel.fromException(exception),
-      );
-    }
-
-    yield infoState;
-  }
-
 }
