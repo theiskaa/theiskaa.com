@@ -39,4 +39,20 @@ class Info {
         'picture': picture,
         'data': data,
       };
+
+      static List<String> get editablefields => [
+        'data',
+        'picture'
+      ];
+
+  /// Generates a list of string of editable fields that is
+  /// different between [this] model and [model].
+  List<String> updatedFields(Info model) {
+    final fields = <String>[];
+
+    if (data != model.data) fields.add('data');
+    if (picture != model.picture) fields.add('picture');
+
+    return fields;
+  }
 }

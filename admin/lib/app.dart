@@ -20,8 +20,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<PostBloc>(create: (context) => PostBloc()),
-        BlocProvider<InfoBloc>(create: (context) => InfoBloc()),
+        BlocProvider<PostBloc>(create: (_) => PostBloc()),
+        BlocProvider<InfoBloc>(create: (_) => InfoBloc()),
       ],
       child: MaterialApp(
         title: 'theiskaa.com admin app',
@@ -44,10 +44,14 @@ class MainWrapper extends StatelessWidget {
           child: CupertinoButton(
             pressedOpacity: .8,
             padding: EdgeInsets.zero,
-            onPressed: () async => await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const InfoHome()),
-            ),
+            onPressed: () async {
+              context.read<InfoBloc>().add(InfoEvent.get());
+
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const InfoHome()),
+              );
+            },
             child: Container(
               color: Colors.yellow,
               child: const Center(

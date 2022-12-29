@@ -33,6 +33,8 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
 
   @override
   Stream<InfoState> mapEventToState(InfoEvent event) async* {
+    await infoService.api.reloadHttpBearer();
+
     switch (event.type) {
       case InfoEvents.getStart:
         yield* mapEventToGetStart(event);
@@ -80,7 +82,14 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       final Info info = event.payload['info'];
       final String field = event.payload['field'];
 
-      await infoService.update(field, info);
+      if (field.isNotEmpty) {
+        await infoService.update(field, info);
+      } else {
+        for (var editable in state.info?.updatedFields(info) ?? []) {
+          await infoService.update(editable, info);
+        }
+      }
+
 
       var currentInfo = state.info;
       if (currentInfo == null) {
