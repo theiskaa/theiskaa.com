@@ -1,10 +1,10 @@
 :root {
-  font-family: 'Inter', sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 @supports (font-variation-settings: normal) {
   :root {
-    font-family: 'Inter var', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
   }
 }
 
@@ -13,20 +13,23 @@ a {
   text-decoration: none;
   border-bottom: solid 2px #8CA8A0;
   padding: 0;
+  margin-bottom: 0.1em;
 }
 
 a:visited {
   color: black;
 }
 
-a:hover,
-a:active {
+a:hover a:active {
   color: #7F9891;
 }
 
 h1 {
   margin-bottom: 0.3em;
-  line-height: 1.2em;
+}
+
+body {
+  line-height: 1.5em;
 }
 
 .clearfix {
@@ -84,6 +87,7 @@ h1 {
 
 .sidebar header {
   font-size: xx-large;
+  font-weight: bold;
   line-height: 1.2em;
 }
 
@@ -111,8 +115,6 @@ h1 {
 }
 
 .avatar {
-  width: 155px;
-  height: 155px;
   float: left;
   border-radius: 6px;
   margin-bottom: 1em;
@@ -272,7 +274,7 @@ blockquote {
 
 .post-preview-id {
   font-size: 10px;
-  color: rgba(255, 165, 0, 0.5);
+  color: #829C91;
 }
 
 .post-preview-title {
@@ -290,7 +292,7 @@ blockquote {
 
 .post-preview-date {
   font-size: 14px;
-  color: rgba(255, 165, 0, 0.5);
+  color: #829C91;
   text-align: right;
   margin-top: 2px;
 }
