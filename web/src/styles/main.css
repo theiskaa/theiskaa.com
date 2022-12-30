@@ -1,32 +1,31 @@
 :root {
-  font-family: 'Inter', sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 @supports (font-variation-settings: normal) {
   :root {
-    font-family: 'Inter var', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
   }
 }
 
 a {
   color: black;
   text-decoration: none;
-  border-bottom: solid 2px orange;
+  border-bottom: solid 2px #8CA8A0;
   padding: 0;
+  margin-bottom: 0.1em;
 }
 
 a:visited {
   color: black;
 }
 
-a:hover,
-a:active {
-  color: orange;
+a:hover a:active {
+  color: #7F9891;
 }
 
 h1 {
   margin-bottom: 0.3em;
-  line-height: 1.2em;
 }
 
 body {
@@ -88,6 +87,7 @@ body {
 
 .sidebar header {
   font-size: xx-large;
+  font-weight: bold;
   line-height: 1.2em;
 }
 
@@ -115,8 +115,6 @@ body {
 }
 
 .avatar {
-  width: 155px;
-  height: 155px;
   float: left;
   border-radius: 6px;
   margin-bottom: 1em;
@@ -276,7 +274,7 @@ blockquote {
 
 .post-preview-id {
   font-size: 10px;
-  color: rgba(255, 165, 0, 0.5);
+  color: #829C91;
 }
 
 .post-preview-title {
@@ -294,7 +292,7 @@ blockquote {
 
 .post-preview-date {
   font-size: 14px;
-  color: rgba(255, 165, 0, 0.5);
+  color: #829C91;
   text-align: right;
   margin-top: 2px;
 }
@@ -312,50 +310,6 @@ blockquote {
   margin-bottom: 1em;
   margin-right: 2em;
   margin-top: 1em;
-}
-
-pre {
-  background-color: #faffff;
-  border: 1px solid #ddd;
-  padding: 0.8em;
-  overflow: scroll;
-  border-radius: 6px;
-  line-height: 1.3em;
-}
-
-pre::-webkit-scrollbar {
-  display: none;
-}
-
-ul,
-ol {
-  margin-left: 1.35em;
-}
-
-code {
-  border: 1px solid #ddd;
-  background-color: #faffff;
-  padding: 0 .2em;
-}
-
-pre code {
-  border: none;
-}
-
-/* terminal */
-pre.terminal {
-  border: 1px solid #000;
-  background-color: #333;
-  color: #FFF;
-}
-
-pre.terminal code {
-  background-color: #333;
-}
-
-blockquote {
-  font-style: italic;
-  padding-left: 10px;
 }
 
 .lds-ellipsis {
@@ -438,7 +392,7 @@ blockquote {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: orange;
+  background: #7F9891;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 

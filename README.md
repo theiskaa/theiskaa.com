@@ -27,7 +27,7 @@ Written in Dart and uses [Flutter](https://flutter.dev). Uses custom first-party
 
 ---
 
-<img alt="web" src="https://user-images.githubusercontent.com/59066341/210007611-724f3b49-375c-426e-a2f4-9d3c15591a17.png">
+<img alt="web" src="https://user-images.githubusercontent.com/59066341/210107420-55fbc4bf-4f0f-436d-9bcb-13d934bcba2a.png">
 
 <p align="center">
 Design inspired from <a href="https://thorstenball.com"> thorstenball.com </a> 'cause of its simplicity and easy implementation in rust. <br>
