@@ -11,7 +11,7 @@
 a {
   color: black;
   text-decoration: none;
-  border-bottom: solid 2px orange;
+  border-bottom: solid 2px #8CA8A0;
   padding: 0;
 }
 
@@ -21,16 +21,12 @@ a:visited {
 
 a:hover,
 a:active {
-  color: orange;
+  color: #7F9891;
 }
 
 h1 {
   margin-bottom: 0.3em;
   line-height: 1.2em;
-}
-
-body {
-  line-height: 1.5em;
 }
 
 .clearfix {
@@ -314,50 +310,6 @@ blockquote {
   margin-top: 1em;
 }
 
-pre {
-  background-color: #faffff;
-  border: 1px solid #ddd;
-  padding: 0.8em;
-  overflow: scroll;
-  border-radius: 6px;
-  line-height: 1.3em;
-}
-
-pre::-webkit-scrollbar {
-  display: none;
-}
-
-ul,
-ol {
-  margin-left: 1.35em;
-}
-
-code {
-  border: 1px solid #ddd;
-  background-color: #faffff;
-  padding: 0 .2em;
-}
-
-pre code {
-  border: none;
-}
-
-/* terminal */
-pre.terminal {
-  border: 1px solid #000;
-  background-color: #333;
-  color: #FFF;
-}
-
-pre.terminal code {
-  background-color: #333;
-}
-
-blockquote {
-  font-style: italic;
-  padding-left: 10px;
-}
-
 .lds-ellipsis {
   display: inline-block;
   position: relative;
@@ -438,7 +390,7 @@ blockquote {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: orange;
+  background: #7F9891;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 
