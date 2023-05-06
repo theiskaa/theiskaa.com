@@ -8,18 +8,33 @@
   }
 }
 
+/* TODO: make background color black */
+
 .center-div {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: right;
-    background-color: rgba(0, 0, 0, 0);
 }
 
 .centered-text {
     display: inline-block;
-    color: white; /* Adjust the text color as needed */
+    color: #7F9891;
     padding: 5px 10px;
     border-radius: 4px;
+    font-size: 24px;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+a:visited {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+a:hover a:active {
+  color: #7F9891;
 }

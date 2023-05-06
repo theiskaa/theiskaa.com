@@ -19,7 +19,7 @@ pub fn app() -> Html {
     html! {
       <div class={global_style}>
         <div class="center-div">
-          <span class="right-centered-text">
+          <span class="centered-text">
             <a href="https://github.com/theiskaa/theiskaa/blob/main/me.md">{"me"}</a>
             { " . " }
             <a href="https://instagram.com/theiskaa">{"photos"}</a>
