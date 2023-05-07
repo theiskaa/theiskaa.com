@@ -17,7 +17,8 @@ pub fn app() -> Html {
     };
 
     html! {
-      <div class={global_style}>
+     <div class={global_style}>
+       <div class="overlay">
         <div class="center-div">
           <span class="centered-text">
             <a href="https://github.com/theiskaa/theiskaa/blob/main/me.md">{"me"}</a>
@@ -29,6 +30,7 @@ pub fn app() -> Html {
             <a href="https://insolite.io">{"insolite"}</a>
           </span>
         </div>
+       </div>
       </div>
     }
 }
