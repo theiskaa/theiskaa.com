@@ -6,25 +6,31 @@
 
 use stylist::{yew::styled_component, Style};
 use yew::prelude::*;
-use yew_router::prelude::*;
-
-use crate::routes::*;
 
 const STYLECSS: &str = include_str!("styles/main.css");
 
 #[styled_component(App)]
 pub fn app() -> Html {
     let global_style = match Style::new(STYLECSS) {
-        // TODO: Implement pretty error.
         Err(e) => return html! { format!("Something went wrong: {}", e) },
         Ok(s) => s,
     };
 
     html! {
-      <div class={global_style}>
-        <BrowserRouter>
-            <Switch<Route> render={Switch::render(switch)} />
-        </BrowserRouter>
+     <div class={global_style}>
+       <div class="overlay">
+        <div class="center-div">
+          <span class="centered-text">
+            <a href="https://github.com/theiskaa/theiskaa/blob/main/me.md">{"me"}</a>
+            { " . " }
+            <a href="https://instagram.com/theiskaa">{"photos"}</a>
+            { " . " }
+            <a href="https://twitter.com/theiskaa">{"tweets"}</a>
+            { " . " }
+            <a href="https://insolite.io">{"insolite"}</a>
+          </span>
+        </div>
+       </div>
       </div>
     }
 }

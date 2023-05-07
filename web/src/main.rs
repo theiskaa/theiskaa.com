@@ -5,12 +5,6 @@
 //
 
 pub mod app;
-pub mod components;
-pub mod models;
-pub mod routes;
-pub mod services;
-pub mod utils;
-
 use app::App;
 
 // Use `wee_alloc` as the global allocator.
