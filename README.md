@@ -1,29 +1,10 @@
 # [theiskaa.com](https://theiskaa.com)
 
-The official source code of my personal website. (API/client combined).
+Source code of my website that is currently running at [theiskaa.com](https://theiskaa.com).
+Built with rust (using yew framework).
 
-### Tech Stack:
-- API: **Go**
-- Web: **Rust**
-- Rendering: **Pure HTML**
-- Deployment: **Digital Ocean**
-- Hosting: **Cloud Flare**
+The source code for the old website, including both the backend and web client, has been archived. <br> However, you can still access it via the [old](https://github.com/theiskaa/theiskaa.com/tree/old) branch.
 
 ---
 
-## API
-Written in Go and uses firestore as cloud storage by connecting via [firebase admin SDK](https://firebase.google.com/docs/admin/setupxt).
-Currently, has two endpoints `/info` and `/posts`. `/info` is the endpoint that is connected to the **Info** page's data.
-And `/posts` is the endpoint that manages the blog posts of mine.
-
-## Web
-Written in Rust and uses [Yew](https://yew.rs) framework. Implements [yew_router](https://yew.rs/docs/next/concepts/router) for routing, [stylist](https://crates.io/crates/stylist) for styling, and custom request service wrapper(dio) to [reqwest](https://crates.io/crates/reqwest) for HTTP requesting.
-
----
-
-<img alt="web" src="https://user-images.githubusercontent.com/59066341/210107420-55fbc4bf-4f0f-436d-9bcb-13d934bcba2a.png">
-
-<p align="center">
-Design inspired from <a href="https://thorstenball.com"> thorstenball.com </a> 'cause of its simplicity and easy implementation in rust. <br>
-Thanks Thorsten <3
-</p>
+<img alt="preview of theiskaa.com" src="https://user-images.githubusercontent.com/59066341/236687726-23418d06-9483-4336-b463-6fa0d4464c7a.png">
