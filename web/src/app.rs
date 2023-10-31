@@ -17,20 +17,21 @@ pub fn app() -> Html {
     };
 
     html! {
-     <div class={global_style}>
-       <div class="overlay">
-        <div class="center-div">
-          <span class="centered-text">
-            <a href="https://github.com/theiskaa/theiskaa/blob/main/me.md">{"me"}</a>
-            { " . " }
-            <a href="https://instagram.com/theiskaa">{"photos"}</a>
-            { " . " }
-            <a href="https://twitter.com/theiskaa">{"tweets"}</a>
-            { " . " }
-            <a href="https://insolite.io">{"insolite"}</a>
-          </span>
+        <div class={global_style}>
+           <div class="overlay">
+              <div class="center-div">
+                 <span class="centered-text">
+                 <a href="https://github.com/theiskaa/theiskaa/blob/main/me.md" alt="me">{"me"}</a>
+                 { " . " }
+                 <a href="https://instagram.com/theiskaa" alt="photos">{"photos"}</a>
+                 { " . " }
+                 <a href="https://twitter.com/theiskaa" alt="posts">{"tweets"}</a>
+                 { " . " }
+                 <a href="https://insolite.io" alt="insolite">{"insolite"}</a>
+                 </span>
+              </div>
+           </div>
         </div>
-       </div>
-      </div>
     }
 }
+
