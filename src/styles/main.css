@@ -74,6 +74,18 @@ a:visited {
   padding: calc(5% + 1px);
 }
 
+.text-container .not-found {
+  margin: 0;
+  font-size: calc(100% + 6vw);
+  color: rgba(225, 225, 225, 0.01);
+  background-image: url("https://github.com/theiskaa/theiskaa.com/assets/59066341/5efc0f95-ae75-4f03-910f-99b7a574af24");
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  animation: animate 100s ease-in-out infinite;
+  text-align: center;
+  font-weight: 900;
+}
+
 @keyframes animate {
   0%, 100% {
     background-position: left top;
