@@ -15,12 +15,6 @@ pub enum Route {
     #[at("/")]
     Home,
 
-    // #[at("/blog")]
-    // Blog,
-
-    // #[at("/blog/:id")]
-    // BlogPage { id: String },
-
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -34,16 +28,6 @@ pub fn switch(routes: &Route) -> Html {
         Route::Home => {
             html! { <Home/> }
         }
-
-        // Route::Blog => {
-        //     // let blog: ChildrenRenderer<VNode> = Children::new(vec![html! { <BlogList/> }]);
-        //     html! { <div> </div> }
-        // }
-
-        // Route::BlogPage { id } => {
-        //     // let blog_page = Children::new(vec![html! { <BlogPage id={ id.clone() }/> }]);
-        //     html! { <div> </div> }
-        // }
 
         Route::NotFound => {
             html! { <NotFound/> }
