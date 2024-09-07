@@ -6,6 +6,7 @@
 
 pub mod app;
 pub mod routes;
+pub mod components;
 use app::App;
 
 fn main() {
