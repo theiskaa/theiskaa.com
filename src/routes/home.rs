@@ -18,15 +18,26 @@ pub fn home() -> Html {
                             </p>
                         </div>
                     </div>
+                    <div class="links">
+                        <p>
+                            <a href="https://github.com/theiskaa" alt="me">{"me"}</a>
+                            { " . " }
+                            <a href="https://instagram.com/theiskaa" alt="photos">{"photos"}</a>
+                            { " . " }
+                            <a href="https://twitter.com/theiskaa" alt="posts">{"tweets"}</a>
+                            { " . " }
+                            <a href="https://insolite.io" alt="insolite">{"insolite"}</a>
+                        </p>
+                    </div>
                     <div class="about-text">
                         <p>
                             {"I'm a self-taught software engineer who started programming at 13. With over a decade of experience, I began working professionally at 15, and now, at 19 years old, I've gained hands-on expertise across various startups and projects."}
                         </p>
                         <p>
-                            {"Since my early start, I’ve contributed to multiple innovative open-source initiatives. Alongside my startup at Insolite, we've released 7 Flutter/Dart packages, which can be found "}
-                            <a href="https://pub.dev/publishers/insolite.io/packages" alt="insolite pub.dev">{"at pub.dev page of insolite"}</a>
+                            {"Since my early start, I’ve contributed to multiple innovative open-source initiatives. Alongside my startup at Insolite, we've released 8 Flutter/Dart packages, which can be found "}
+                            <a href="https://pub.dev/publishers/insolite.io/packages" alt="insolite pub.dev">{"at pub.dev of insolite"}</a>
                             {" or "}
-                            <a href="https://pub.dev/publishers/insolite.io/packages" alt="my pub.dev">{"my personal pub.dev page"}</a>
+                            <a href="https://pub.dev/publishers/theiskaa.com/packages" alt="my pub.dev">{"my personal pub.dev"}</a>
                             {"."}
                         </p>
                         <p>
@@ -34,13 +45,13 @@ pub fn home() -> Html {
                         </p>
                         <ul>
                             <li><a href="https://pub.dev/packages/hidable" alt="Hidable">{"Hidable"}</a> {" (Flutter/Dart) - A Flutter widget for scroll-to-hide functionality."}</li>
-                            <li><a href="https://pub.dev/packages/field_suggestion" alt="Field Suggestion">{"Field Suggestion"}</a> {"(Flutter/Dart) - A lightweight, customizable search field for Flutter."}</li>
-                            <li><a href="https://pub.dev/packages/widget_slider" alt="Widget Slider">{"Widget Slider"}</a> {"(Flutter/Dart) - A fast and user-friendly animated slider list widget for Flutter."}</li>
-                            <li><a href="https://github.com/insolite-dev/notya" alt="Notya">{"Notya"}</a> {"(Go, Flutter/Dart, Firebase) - A versatile command-line notes app with cross-platform mobile integration."}</li>
-                            <li><a href="https://github.com/theiskaa/replace" alt="Replace">{"Replace"}</a> {"(C) - A versatile tool that enables you to perform efficient replacement operations within specified files, with a recursive replacement algorithm."}</li>
-                            <li><a href="https://github.com/theiskaa/mate" alt="Mate">{"Mate"}</a> {"(Rust) - A powerful arithmetic expression interpreter and calculator in Rust, published on Crates.io."}</li>
-                            <li><a href="https://github.com/theiskaa/hivetime" alt="Hivetime">{"Hivetime"}</a> {"(Rust) - A straightforward interpreter and calculator designed for short-time syntax, primarily used in Jira work logs."}</li>
-                            <li><a href="https://github.com/theiskaa/mdPdf" alt="mdPdf">{"mdPdf"}</a> {"(Rust) - A simple tool and library to create/transpile Markdown to PDF."}</li>
+                            <li><a href="https://pub.dev/packages/field_suggestion" alt="Field Suggestion">{"Field Suggestion"}</a> {" (Flutter/Dart) - A lightweight, customizable search field for Flutter."}</li>
+                            <li><a href="https://pub.dev/packages/widget_slider" alt="Widget Slider">{"Widget Slider"}</a> {" (Flutter/Dart) - A fast and user-friendly animated slider list widget for Flutter."}</li>
+                            <li><a href="https://github.com/insolite-dev/notya" alt="Notya">{"Notya"}</a> {" (Go, Flutter/Dart, Firebase) - A versatile command-line notes app with cross-platform mobile integration."}</li>
+                            <li><a href="https://github.com/theiskaa/replace" alt="Replace">{"Replace"}</a> {" (C) - A versatile tool that enables you to perform efficient replacement operations within specified files, with a recursive replacement algorithm."}</li>
+                            <li><a href="https://github.com/theiskaa/mate" alt="Mate">{"Mate"}</a> {" (Rust) - A powerful arithmetic expression interpreter and calculator in Rust, published on Crates.io."}</li>
+                            <li><a href="https://github.com/theiskaa/hivetime" alt="Hivetime">{"Hivetime"}</a> {" (Rust) - A straightforward interpreter and calculator designed for short-time syntax, primarily used in Jira work logs."}</li>
+                            <li><a href="https://github.com/theiskaa/mdPdf" alt="mdPdf">{"mdPdf"}</a> {" (Rust) - A simple tool and library to create/transpile Markdown to PDF."}</li>
                         </ul>
 
                         <h2>{"Past Work"}</h2>

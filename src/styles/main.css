@@ -105,7 +105,8 @@ hr.dotted-divider {
 
 a {
     color: #fff;
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-color: #2fc993;
 }
 
 a:visited {
@@ -115,7 +116,17 @@ a:visited {
 .links {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.links p {
+    font-size: 17px;
+    color: #2fc993;
+}
+
+.links a {
+    text-decoration: underline;
+    text-decoration-color: #2fc993;
 }
 
 h2 {
