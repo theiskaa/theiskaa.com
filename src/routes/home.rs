@@ -7,7 +7,7 @@ pub fn home() -> Html {
             <div class="body">
                 <div class="container">
                     <div class="profile-section">
-                        <img src="public/fav.png" alt="Profile Avatar" class="profile-pic" />
+                        <img src="public/profile.png" alt="Profile Avatar" class="profile-pic" />
                         <div class="profile-info">
                             <h1>{"Ismael Shakverdiev"}</h1>
                             <p class="role">
