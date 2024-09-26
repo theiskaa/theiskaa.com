@@ -11,12 +11,12 @@ pub fn home() -> Html {
                         <div class="profile-info">
                             <h1>{"Ismael Shakverdiev"}</h1>
                             <p class="role">
-                                {"founder "}
-                                <a href="https://insolite.io" alt="insolite">{"insolite.io"}</a>
+                                {"engineer @"}
+                                <a href="https://tnet.ge" alt="tnet">{"tnet.ge"}</a>
                                 {". founding member of "}
                                 <a href="https://jobia.work" alt="jobia">{"jobia.work"}</a>
-                                {". engineer @"}
-                                <a href="https://tnet.ge" alt="tnet">{"tnet.ge"}</a>
+                                {". founder "}
+                                <a href="https://insolite.io" alt="insolite">{"insolite.io"}</a>
                             </p>
                         </div>
                     </div>
@@ -44,6 +44,14 @@ pub fn home() -> Html {
                         </p>
                         <p>
                             {"I spend a large part of my free time thinking about consciousness, low level programming, catching up on papers about artificial intelligence & building intuition on math fundamentals."}
+                        </p>
+                        <hr class="dotted-divider"/>
+                        <p>
+                          {"From October 2024, I started working at "}
+                          <a href="https://tnet.ge" alt="tnet.ge">{"TNET"}</a>
+                          {", the largest technology company in Georgia. As a Senior Software Engineer in the "}
+                          <a href="https://tkt.ge" alt="tkt.ge">{"tkt.ge"}</a>
+                          {" mobile application department, where I am part of a team responsible for building the application from the ground up."}
                         </p>
                         <h2>{"Past Work"}</h2>
                         <p>
@@ -86,7 +94,7 @@ pub fn home() -> Html {
                         <p>
                             {"Feel free to reach out at "}
                             <a href="mailto:me@theiskaa.com" alt="email">{"me@theiskaa.com"}</a>
-                            {" or find me on"}
+                            {" or find me on "}
                             <a href="https://x.com/theiskaa" alt="email">{"@theiskaa"}</a>
                         </p>
                     </div>
