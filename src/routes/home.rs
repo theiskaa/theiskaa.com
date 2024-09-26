@@ -11,11 +11,11 @@ pub fn home() -> Html {
                         <div class="profile-info">
                             <h1>{"Ismael Shakverdiev"}</h1>
                             <p class="role">
-                                {"engineer @"}
+                                {"engineer at "}
                                 <a href="https://tnet.ge" alt="tnet">{"tnet.ge"}</a>
                                 {". founding member of "}
                                 <a href="https://jobia.work" alt="jobia">{"jobia.work"}</a>
-                                {". founder "}
+                                {". founder of "}
                                 <a href="https://insolite.io" alt="insolite">{"insolite.io"}</a>
                             </p>
                         </div>
