@@ -48,9 +48,9 @@ pub fn home() -> Html {
                         <hr class="dotted-divider"/>
                         <p>
                           {"From October 2024, I started working at "}
-                          <a href="https://tnet.ge" alt="tnet.ge">{"TNET"}</a>
+                          <a href="https://tnet.ge/en" alt="tnet.ge">{"TNET"}</a>
                           {", the largest technology company in Georgia. As a Senior Software Engineer in the "}
-                          <a href="https://tkt.ge" alt="tkt.ge">{"tkt.ge"}</a>
+                          <a href="https://tkt.ge/en" alt="tkt.ge">{"tkt.ge"}</a>
                           {" mobile application department, where I am part of a team responsible for building the application from the ground up."}
                         </p>
                         <h2>{"Past Work"}</h2>
