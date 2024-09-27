@@ -22,7 +22,7 @@ pub fn home() -> Html {
                     </div>
                     <div class="links">
                         <p>
-                            <a href="https://github.com/theiskaa" alt="me">{"me"}</a>
+                            <a href="https://github.com/theiskaa" alt="github">{"github"}</a>
                             { " . " }
                             <a href="https://instagram.com/theiskaa" alt="photos">{"photos"}</a>
                             { " . " }
@@ -34,13 +34,6 @@ pub fn home() -> Html {
                     <div class="about-text">
                         <p>
                             {"I'm a self-taught software engineer who started programming at 13. With over a decade of experience, I began working professionally at 15, and now, at 19 years old, I've gained hands-on expertise across various startups and projects."}
-                        </p>
-                        <p>
-                          {"Since my early start, I’ve contributed to several innovative open-source projects. Together with my startup, Insolite, we’ve released 8 Flutter/Dart "}
-                          <a href="https://pub.dev/publishers/insolite.io/packages" alt="insolite pub.dev">{"packages"}</a>
-                          {". I also tinker with some personal projects, most of them are open source and available on my "}
-                          <a href="https://github.com/theiskaa" alt="github.com/thiskaa">{"github"}</a>
-                          {" profile."}
                         </p>
                         <p>
                             {"I spend a large part of my free time thinking about consciousness, low level programming, catching up on papers about artificial intelligence & building intuition on math fundamentals."}
