@@ -16,7 +16,7 @@ pub fn home() -> Html {
                         <div class="profile-info">
                             <h1>{"Ismael Shakverdiev"}</h1>
                             <p class="role">
-                                {"engineer at "}
+                                {"senior engineer at "}
                                 <a href="https://tnet.ge" alt="tnet">{"tnet.ge"}</a>
                                 {". founding member of "}
                                 <a href="https://jobia.work" alt="jobia">{"jobia.work"}</a>
@@ -30,8 +30,6 @@ pub fn home() -> Html {
                             <a href="https://instagram.com/theiskaa" alt="photos">{"photos"}</a>
                             { " . " }
                             <a href="https://twitter.com/theiskaa" alt="posts">{"tweets"}</a>
-                            { " . " }
-                            <a href="https://insolite.io" alt="insolite">{"insolite"}</a>
                         </p>
                     </div>
                     <div class="about-text">
