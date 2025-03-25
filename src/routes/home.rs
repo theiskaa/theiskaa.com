@@ -1,5 +1,5 @@
+use chrono::{NaiveDate, Utc};
 use yew::prelude::*;
-use chrono::{Utc, NaiveDate};
 
 #[function_component(Home)]
 pub fn home() -> Html {
@@ -12,12 +12,14 @@ pub fn home() -> Html {
             <div class="body">
                 <div class="container">
                     <div class="profile-section">
-                        <img src="public/profile.png" alt="Profile Avatar" class="profile-pic" />
+                        <img src="public/profile.jpg" alt="Profile Avatar" class="profile-pic" />
                         <div class="profile-info">
                             <h1>{"Ismael Shakverdiev"}</h1>
                             <p class="role">
                                 {"senior engineer at "}
                                 <a href="https://tnet.ge" alt="tnet">{"tnet.ge"}</a>
+                                {". crafting "}
+                                <a href="https://sarke.org" alt="sarke">{"sarke.org"}</a>
                                 {". founding member of "}
                                 <a href="https://jobia.work" alt="jobia">{"jobia.work"}</a>
                             </p>
