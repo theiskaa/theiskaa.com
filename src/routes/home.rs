@@ -13,8 +13,6 @@ pub fn home() -> Html {
                             <p class="role">
                                 {"senior engineer at "}
                                 <a href="https://tnet.ge" alt="tnet">{"tnet.ge"}</a>
-                                {". crafting "}
-                                <a href="https://sarke.org" alt="sarke">{"sarke.org"}</a>
                                 {". founding member of "}
                                 <a href="https://jobia.work" alt="jobia">{"jobia.work"}</a>
                             </p>
