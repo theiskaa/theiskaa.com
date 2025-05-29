@@ -44,11 +44,11 @@ pub fn home() -> Html {
                         </p>
                         <p>
                           {"From October 2023 to September 2024, I worked as a Software Engineer at "}
-                          <a href="https://www.l3vels.xyz/" alt="L3VELS">{"L3VELS"}</a>
+                          <a href="https://github.com/l3vels" alt="L3VELS">{"L3VELS"}</a>
                           {" and later at "}
                           <a href="https://datura.ai" alt="datura.ai">{"datura.ai"}</a>
                           {", contributing to AI platforms like "}
-                          <a href="https://github.com/l3vels/L3AGI" alt="L3AGI">{"L3AGI"}</a>
+                          <a href="https://github.com/l3vels/team-of-ai-agents" alt="L3">{"L3"}</a>
                           {" and "}
                           <a href="https://chi.datura.ai" alt="Datura">{"Datura"}</a>
                           {". I focused on backend development, infrastructure optimization, and creating intelligent search tools."}
@@ -56,8 +56,7 @@ pub fn home() -> Html {
                         <p>
                           {"Before that, I was a Senior Software Engineer at "}
                           <a href="https://zencode.io" alt="Zencode">{"Zencode"}</a>
-                          {", working on "}
-                          <a href="https://payme.zencode.io" alt="Zenbank">{"Payme"}</a>
+                          {", working on Payme"}
                           {", an internet banking application. I built secure authentication systems, encrypted cross-platform local database solutions, and implemented real-time communication features."}
                         </p>
                         <p>
