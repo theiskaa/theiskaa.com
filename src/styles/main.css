@@ -1,181 +1,74 @@
-:root {
-    font-family: arial, helvetica, sans-serif;
-    background-color: #ffffff;
-}
-
-@supports (font-variation-settings: normal) {
-    :root {
-        font-family: arial, helvetica, sans-serif;
-    }
-}
-
 * {
-    background-color: #ffffff;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+body, html {
+    height: 100%;
+    background-color: #ffffff;
+}
+
 .wrapper {
     background-color: #ffffff;
-    color: #000;
-    height: 100%;
+    height: 100vh;
     width: 100%;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
-
-.body {
-    background-color: #ffffff;
-    color: rgba(0, 0, 0, 0.8);
-    font-weight: 400;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-y: auto;
-}
-
-.container {
-    max-width: 650px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    text-align: left;
-}
-
-.profile-section {
     display: flex;
+    justify-content: center;
     align-items: center;
-    margin-top: 10%;
-    margin-bottom: 30px;
 }
 
-.profile-pic {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin-right: 15px;
+.center {
+    text-align: center;
 }
 
-.profile-info h1 {
-    font-size: 20px;
-    margin-bottom: 5px;
-    color: #000;
-}
-
-.role {
-    font-size: 15px;
-    color: #616161;
-}
-
-.about-text p,
-.bio p {
-    margin-bottom: 15px;
-    line-height: 1.5;
-    color: rgba(0, 0, 0, 0.8);
-    font-size: 14px;
+.motto {
+    font-family: 'Pirata One', cursive;
+    font-size: 18px;
     font-weight: 400;
-}
-
-ul {
+    color: #e5e7eb;
     margin-bottom: 20px;
-    padding-left: 20px;
-    list-style-type: disc;
-}
-
-li {
-    margin-bottom: 6px;
-    color: rgba(0, 0, 0, 0.8);
-    font-size: 14px;
-}
-
-hr.dotted-divider {
-    border: none;
-    border-top: 1px dashed #b2b2b2;
-    margin-top: 21px;
-    margin-bottom: 21px;
-}
-
-a {
-    color: #000;
-    text-decoration: underline;
-    text-decoration-color: #2fc993;
-}
-
-a:visited {
-    color: #000;
 }
 
 .links {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.links p {
-    font-size: 17px;
-    color: #2fc993;
+    justify-content: center;
+    align-items: center;
 }
 
 .links a {
+    color: #000;
+    text-decoration: none;
+    font-size: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.links a:hover {
     text-decoration: underline;
     text-decoration-color: #2fc993;
 }
 
-h2 {
-    color: #000;
-    margin-bottom: 5px;
-    margin-top: 15px;
+.links .dot {
+    width: 6px;
+    height: 6px;
+    background-color: #999;
+    border-radius: 50%;
+    margin: 0 16px;
+    position: relative;
+    top: 2px;
 }
 
-.overlay {
-    background-color: #ffffff;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-    z-index: 1000;
+.links.small {
+    margin-top: 16px;
 }
 
-.center-div {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: right;
-    background-color: #ffffff;
-    color: black;
+.links.small a {
+    font-size: 20px;
+    color: #666;
 }
 
-.centered-text {
-    color: #5a7a72;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: calc(80% + 0.8vw);
-    background-color: #ffffff;
-}
-
-.text-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffffff;
-}
-
-.text-container .not-found {
-    margin: 0;
-    font-size: calc(100% + 6vw);
-    color: rgba(30, 30, 30, 0.01);
-    -webkit-background-clip: text;
-    text-align: center;
-    font-weight: 900;
-    background-color: #ffffff;
+.links.small .dot {
+    width: 5px;
+    height: 5px;
+    background-color: #bbb;
 }
