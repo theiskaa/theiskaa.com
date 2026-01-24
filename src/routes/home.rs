@@ -14,11 +14,11 @@ pub fn home() -> Html {
                     <a href="https://instagram.com/theiskaa">{"instagram"}</a>
                 </div>
                 <div class="links small">
-                    <a href="https://reeed.io">{"reeed.io"}</a>
+                    <a href="https://jobia.org">{"jobia.org"}</a>
                     <span class="dot"></span>
                     <a href="https://11s.art">{"11s.art"}</a>
                     <span class="dot"></span>
-                    <a href="https://jobia.work">{"jobia.work"}</a>
+                    <a href="https://reeed.io">{"reeed.io"}</a>
                 </div>
             </div>
         </div>
