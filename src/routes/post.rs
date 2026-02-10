@@ -1,4 +1,3 @@
-use gloo::utils::document;
 use pulldown_cmark::{html::push_html, Options, Parser};
 use wasm_bindgen::prelude::*;
 use web_sys::Element;
@@ -31,21 +30,32 @@ export function highlight_code(element) {
         element.querySelectorAll('pre code').forEach(function(block) { hljs.highlightElement(block); });
     });
 }
-export function set_meta(name, content) {
-    var el = document.querySelector('meta[name=\"' + name + '\"]');
-    if (el) { el.setAttribute('content', content); }
-    else {
-        el = document.createElement('meta');
-        el.setAttribute('name', name);
-        el.setAttribute('content', content);
-        document.head.appendChild(el);
+export function set_page_meta(title, description) {
+    document.title = title;
+    var selectors = [
+        ['meta[name=\"description\"]', 'name', 'description'],
+        ['meta[property=\"og:title\"]', 'property', 'og:title'],
+        ['meta[property=\"og:description\"]', 'property', 'og:description'],
+        ['meta[name=\"twitter:title\"]', 'name', 'twitter:title'],
+        ['meta[name=\"twitter:description\"]', 'name', 'twitter:description']
+    ];
+    for (var i = 0; i < selectors.length; i++) {
+        var el = document.querySelector(selectors[i][0]);
+        var val = selectors[i][2].indexOf('title') !== -1 ? title : description;
+        if (el) { el.setAttribute('content', val); }
+        else {
+            el = document.createElement('meta');
+            el.setAttribute(selectors[i][1], selectors[i][2]);
+            el.setAttribute('content', val);
+            document.head.appendChild(el);
+        }
     }
 }
 ")]
 extern "C" {
     fn render_math(element: &Element);
     fn highlight_code(element: &Element);
-    fn set_meta(name: &str, content: &str);
+    fn set_page_meta(title: &str, description: &str);
 }
 
 /// Extract math blocks (`$$...$$` and `$...$`) from markdown, replacing them
@@ -200,8 +210,10 @@ pub struct PostProps {
 pub fn post_page(props: &PostProps) -> Html {
     match get_post_by_slug(&props.slug) {
         Some(post) => {
-            document().set_title(&format!("{} - theiskaa", &post.title));
-            set_meta("description", &post.description);
+            set_page_meta(
+                &format!("{} - theiskaa", &post.title),
+                &post.description,
+            );
 
             let html_output = render_markdown(&post.content);
             let content_ref = use_node_ref();
@@ -238,13 +250,11 @@ pub fn post_page(props: &PostProps) -> Html {
         }
         None => {
             html! {
-                <div class="overlay">
-                    <div class="center-div">
-                        <div class="text-container">
-                            <div class="not-found">
-                                <a href="/posts" alt="404 | Not found">{"404"}</a>
-                            </div>
-                        </div>
+                <div class="not-found-wrapper">
+                    <div class="not-found-container">
+                        <h1 class="not-found-code">{"404"}</h1>
+                        <p class="not-found-text">{"post not found"}</p>
+                        <a href="/posts" class="not-found-link">{"<- posts"}</a>
                     </div>
                 </div>
             }
