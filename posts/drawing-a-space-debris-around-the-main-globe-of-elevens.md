@@ -1,5 +1,5 @@
 ---
-title: Drawing a space debris around main globe of Elevens
+title: Drawing a space debris around the main globe of Elevens
 date: 2026-02-10
 description: Multi-layered orbital debris system with 5 concentric shells, Keplerian differential rotation, seeded deterministic positioning, and sinusoidal breathing animation in 11s.art
 ---
