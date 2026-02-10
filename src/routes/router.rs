@@ -11,10 +11,10 @@ pub enum Route {
     #[at("/")]
     Home,
 
-    #[at("/blog")]
+    #[at("/posts")]
     Blog,
 
-    #[at("/blog/:slug")]
+    #[at("/posts/:slug")]
     Post { slug: String },
 
     #[not_found]

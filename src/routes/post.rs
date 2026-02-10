@@ -225,7 +225,7 @@ pub fn post_page(props: &PostProps) -> Html {
                 <div class="post-wrapper">
                     <div class="post-container">
                         <div class="post-back">
-                            <a href="/blog">{"<- posts"}</a>
+                            <a href="/posts">{"<- posts"}</a>
                         </div>
                         <div class="post-header">
                             <h1 class="post-title">{ &post.title }</h1>
@@ -242,7 +242,7 @@ pub fn post_page(props: &PostProps) -> Html {
                     <div class="center-div">
                         <div class="text-container">
                             <div class="not-found">
-                                <a href="/blog" alt="404 | Not found">{"404"}</a>
+                                <a href="/posts" alt="404 | Not found">{"404"}</a>
                             </div>
                         </div>
                     </div>
