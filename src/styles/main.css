@@ -72,3 +72,223 @@ body, html {
     height: 5px;
     background-color: #bbb;
 }
+
+/* Blog list page */
+.blog-wrapper {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 80px 20px;
+    background-color: #ffffff;
+}
+
+.blog-container {
+    max-width: 640px;
+    width: 100%;
+}
+
+.blog-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 40px;
+}
+
+.blog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.blog-item-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.blog-item {
+    padding: 0;
+}
+
+.blog-item-date {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    color: #999;
+}
+
+.blog-item-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #000;
+    margin: 4px 0;
+}
+
+.blog-item-link:hover .blog-item-title {
+    text-decoration: underline;
+    text-decoration-color: #2fc993;
+}
+
+.blog-item-desc {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.blog-back {
+    margin-top: 48px;
+}
+
+.post-back {
+    margin-bottom: 24px;
+}
+
+.blog-back a,
+.post-back a {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    color: #999;
+    text-decoration: none;
+}
+
+.blog-back a:hover,
+.post-back a:hover {
+    color: #000;
+}
+
+/* Post page */
+.post-wrapper {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 80px 20px;
+    background-color: #ffffff;
+}
+
+.post-container {
+    max-width: 640px;
+    width: 100%;
+}
+
+.post-header {
+    margin-bottom: 40px;
+}
+
+.post-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 8px;
+}
+
+.post-date {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    color: #999;
+}
+
+.post-content {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+}
+
+.post-content .math-display,
+.post-content pre {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 60px;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3 {
+    color: #000;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.post-content h1 { font-size: 28px; }
+.post-content h2 { font-size: 22px; }
+.post-content h3 { font-size: 18px; }
+
+.post-content p {
+    margin-bottom: 16px;
+}
+
+.post-content ul,
+.post-content ol {
+    margin-bottom: 16px;
+    padding-left: 24px;
+}
+
+.post-content li {
+    margin-bottom: 6px;
+}
+
+.post-content a {
+    color: #000;
+    text-decoration: underline;
+    text-decoration-color: #2fc993;
+}
+
+.post-content code {
+    font-family: "SF Mono", "Fira Code", monospace;
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.post-content pre {
+    background-color: #f5f5f5;
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+.post-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.post-content blockquote {
+    border-left: 3px solid #e5e7eb;
+    padding-left: 16px;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.post-content .math-display {
+    margin: 20px 0;
+    text-align: center;
+    overflow-x: auto;
+}
+
+.post-content .math-inline {
+    display: inline;
+}
+
+.post-content table {
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.post-content th,
+.post-content td {
+    border: 1px solid #e5e7eb;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.post-content th {
+    background-color: #f9fafb;
+    font-weight: 600;
+}

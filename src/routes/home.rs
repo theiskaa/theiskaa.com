@@ -7,6 +7,8 @@ pub fn home() -> Html {
             <div class="center">
                 <h1 class="motto">{"Libertas aut mors"}</h1>
                 <div class="links">
+                    <a href="/blog">{"posts"}</a>
+                    <span class="dot"></span>
                     <a href="https://github.com/theiskaa">{"github"}</a>
                     <span class="dot"></span>
                     <a href="https://twitter.com/theiskaa">{"twitter"}</a>
