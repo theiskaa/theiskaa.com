@@ -1,6 +1,6 @@
 ---
 title: Globe rendering system of Elevens
-date: 2026-02-10
+date: 2026-02-09
 description: How 4000 slots are distributed across a 3D sphere using cosine-weighted tiling, O(1) hit detection in 11s.art
 ---
 
@@ -162,3 +162,5 @@ $$r \cdot \sin(\theta_{cap} \cdot \pi/180) \cdot 1.4 \approx 1.22 \text{ units}$
 Theme colors via getThemeColors(isDark): dark theme uses background 0x000000, emptyOutline 0x2a2a2a, hoverGlow 0x888888; light theme uses background 0xf5f5f5, emptyOutline 0xcccccc, hoverGlow 0x666666. Theme change updates materials in place without scene rebuild.
 
 Performance optimizations: geometry sharing reduces allocations from 4000 to 38; material pooling reduces draw calls; $O(1)$ hit detection replaces $O(4000)$ iteration; texture caching via URL-keyed Map; pixel ratio capped at 1.5; antialiasing disabled; renderer uses powerPreference: 'high-performance'; batched tile creation with abort flag for cleanup.
+
+View in [https://11s.art](https://11s.art)

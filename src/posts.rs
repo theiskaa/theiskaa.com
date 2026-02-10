@@ -49,6 +49,7 @@ pub fn get_posts() -> Vec<Post> {
     let mut posts = vec![
         make_post("globe-rendering-system-of-elevens", include_str!("../posts/globe-rendering-system-of-elevens.md")),
         make_post("highlighting-html-in-flutter", include_str!("../posts/highlighting-html-in-flutter.md")),
+        make_post("drawing-a-space-debris-around-main-globe-of-elevens", include_str!("../posts/drawing-a-space-debris-around-main-globe-of-elevens.md")),
     ];
     posts.sort_by(|a, b| b.date.cmp(&a.date));
     posts
