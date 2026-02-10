@@ -3,6 +3,7 @@ use wasm_bindgen::prelude::*;
 use web_sys::Element;
 use yew::prelude::*;
 
+use crate::meta::set_meta;
 use crate::posts::get_post_by_slug;
 
 #[wasm_bindgen(inline_js = "
@@ -30,32 +31,10 @@ export function highlight_code(element) {
         element.querySelectorAll('pre code').forEach(function(block) { hljs.highlightElement(block); });
     });
 }
-export function set_page_meta(title, description) {
-    document.title = title;
-    var selectors = [
-        ['meta[name=\"description\"]', 'name', 'description'],
-        ['meta[property=\"og:title\"]', 'property', 'og:title'],
-        ['meta[property=\"og:description\"]', 'property', 'og:description'],
-        ['meta[name=\"twitter:title\"]', 'name', 'twitter:title'],
-        ['meta[name=\"twitter:description\"]', 'name', 'twitter:description']
-    ];
-    for (var i = 0; i < selectors.length; i++) {
-        var el = document.querySelector(selectors[i][0]);
-        var val = selectors[i][2].indexOf('title') !== -1 ? title : description;
-        if (el) { el.setAttribute('content', val); }
-        else {
-            el = document.createElement('meta');
-            el.setAttribute(selectors[i][1], selectors[i][2]);
-            el.setAttribute('content', val);
-            document.head.appendChild(el);
-        }
-    }
-}
 ")]
 extern "C" {
     fn render_math(element: &Element);
     fn highlight_code(element: &Element);
-    fn set_page_meta(title: &str, description: &str);
 }
 
 /// Extract math blocks (`$$...$$` and `$...$`) from markdown, replacing them
@@ -210,7 +189,7 @@ pub struct PostProps {
 pub fn post_page(props: &PostProps) -> Html {
     match get_post_by_slug(&props.slug) {
         Some(post) => {
-            set_page_meta(
+            set_meta(
                 &format!("{} - theiskaa", &post.title),
                 &post.description,
             );

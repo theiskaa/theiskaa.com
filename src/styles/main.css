@@ -73,6 +73,32 @@ body, html {
     background-color: #bbb;
 }
 
+@media (max-width: 480px) {
+    .links a {
+        font-size: 18px;
+    }
+
+    .links .dot {
+        margin: 0 10px;
+        width: 4px;
+        height: 4px;
+    }
+
+    .links.small a {
+        font-size: 14px;
+    }
+
+    .links.small .dot {
+        width: 4px;
+        height: 4px;
+        margin: 0 8px;
+    }
+
+    .motto {
+        font-size: 14px;
+    }
+}
+
 /* Blog list page */
 .blog-wrapper {
     min-height: 100vh;
