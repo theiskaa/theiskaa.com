@@ -21,6 +21,8 @@ pub fn home() -> Html {
                     <a href="https://11s.art">{"11s.art"}</a>
                     <span class="dot"></span>
                     <a href="https://reeed.io">{"reeed.io"}</a>
+                    <span class="dot"></span>
+                    <a href="https://apeirron.com">{"apeirron.com"}</a>
                 </div>
             </div>
         </div>
