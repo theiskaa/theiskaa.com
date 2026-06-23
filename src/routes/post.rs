@@ -40,7 +40,12 @@ extern "C" {
 /// Extract math blocks (`$$...$$` and `$...$`) from markdown, replacing them
 /// with placeholders so pulldown-cmark doesn't mangle LaTeX syntax.
 fn protect_math(input: &str) -> (String, Vec<(String, bool)>) {
-    let mut result = String::new();
+    // Accumulate RAW bytes and decode UTF-8 once at the end. Emitting `bytes[i] as
+    // char` would reinterpret each UTF-8 byte as a Latin-1 code point, corrupting
+    // every multibyte character (e.g. `…`/`²`/`×`). Scanning by byte stays correct
+    // because UTF-8 is self-synchronizing: an ASCII delimiter (`` ` ``, `$`, `\n`)
+    // can never appear inside a multibyte sequence.
+    let mut result: Vec<u8> = Vec::with_capacity(input.len());
     let mut blocks: Vec<(String, bool)> = Vec::new();
     let bytes = input.as_bytes();
     let len = bytes.len();
@@ -51,30 +56,30 @@ fn protect_math(input: &str) -> (String, Vec<(String, bool)>) {
             // Skip inline code and fenced code blocks
             if i + 2 < len && bytes[i + 1] == b'`' && bytes[i + 2] == b'`' {
                 // Fenced code block — find closing ```
-                result.push_str("```");
+                result.extend_from_slice(b"```");
                 i += 3;
                 loop {
                     if i >= len {
                         break;
                     }
                     if bytes[i] == b'`' && i + 2 < len && bytes[i + 1] == b'`' && bytes[i + 2] == b'`' {
-                        result.push_str("```");
+                        result.extend_from_slice(b"```");
                         i += 3;
                         break;
                     }
-                    result.push(bytes[i] as char);
+                    result.push(bytes[i]);
                     i += 1;
                 }
             } else {
                 // Inline code — find closing `
-                result.push('`');
+                result.push(b'`');
                 i += 1;
                 while i < len && bytes[i] != b'`' {
-                    result.push(bytes[i] as char);
+                    result.push(bytes[i]);
                     i += 1;
                 }
                 if i < len {
-                    result.push('`');
+                    result.push(b'`');
                     i += 1;
                 }
             }
@@ -82,7 +87,7 @@ fn protect_math(input: &str) -> (String, Vec<(String, bool)>) {
             if i + 1 < len && bytes[i + 1] == b'$' {
                 // Display math $$...$$
                 i += 2;
-                let mut math = String::new();
+                let mut math: Vec<u8> = Vec::new();
                 let mut closed = false;
                 while i < len {
                     if bytes[i] == b'$' && i + 1 < len && bytes[i + 1] == b'$' {
@@ -90,21 +95,21 @@ fn protect_math(input: &str) -> (String, Vec<(String, bool)>) {
                         closed = true;
                         break;
                     }
-                    math.push(bytes[i] as char);
+                    math.push(bytes[i]);
                     i += 1;
                 }
                 if closed {
                     let idx = blocks.len();
-                    blocks.push((math, true));
-                    result.push_str(&format!("\n\nMATH_PLACEHOLDER_{}\n\n", idx));
+                    blocks.push((String::from_utf8_lossy(&math).into_owned(), true));
+                    result.extend_from_slice(format!("\n\nMATH_PLACEHOLDER_{}\n\n", idx).as_bytes());
                 } else {
-                    result.push_str("$$");
-                    result.push_str(&math);
+                    result.extend_from_slice(b"$$");
+                    result.extend_from_slice(&math);
                 }
             } else {
                 // Inline math $...$
                 i += 1;
-                let mut math = String::new();
+                let mut math: Vec<u8> = Vec::new();
                 let mut closed = false;
                 while i < len {
                     if bytes[i] == b'$' {
@@ -115,25 +120,25 @@ fn protect_math(input: &str) -> (String, Vec<(String, bool)>) {
                     if bytes[i] == b'\n' && i + 1 < len && bytes[i + 1] == b'\n' {
                         break; // Don't span across blank lines
                     }
-                    math.push(bytes[i] as char);
+                    math.push(bytes[i]);
                     i += 1;
                 }
                 if closed && !math.is_empty() {
                     let idx = blocks.len();
-                    blocks.push((math, false));
-                    result.push_str(&format!("MATH_PLACEHOLDER_{}", idx));
+                    blocks.push((String::from_utf8_lossy(&math).into_owned(), false));
+                    result.extend_from_slice(format!("MATH_PLACEHOLDER_{}", idx).as_bytes());
                 } else {
-                    result.push('$');
-                    result.push_str(&math);
+                    result.push(b'$');
+                    result.extend_from_slice(&math);
                 }
             }
         } else {
-            result.push(bytes[i] as char);
+            result.push(bytes[i]);
             i += 1;
         }
     }
 
-    (result, blocks)
+    (String::from_utf8_lossy(&result).into_owned(), blocks)
 }
 
 fn html_escape(s: &str) -> String {

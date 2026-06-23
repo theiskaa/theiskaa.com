@@ -1,111 +1,151 @@
 ---
 title: Globe rendering system of Elevens
 date: 2026-06-24
-description: How 11,000 images tile a 3D sphere, render in roughly one draw call over a baked atlas pyramid, and how wish slots orbit the globe as debris in 11s.art
+description: A deep technical dive into 11s.art — cosine-weighted spherical tiling, a GPU-compressed atlas pyramid with deterministic packing, the incremental bake engine and baker/serve split, and the deterministic orbital field for positionless slots.
 ---
 
-11s.art is a globe of 11,000 purchasable slots. Each slot can hold a user's image, and all of them live on the surface of a single rotating sphere, wrapped in a slow field of floating "wish" tiles. Two problems sit underneath that picture, and almost every decision in the system comes from one of them. The first is geometry: how do you tile rectangular images across a sphere so they stay evenly dense from the equator to the poles, instead of bunching up where the meridians converge? The second is budget: how do you draw all 11,000 tiles at once, smoothly, on a phone?
+11s.art renders 11,000 user images as tiles on a single rotating sphere, plus a field of positionless tiles orbiting it. Two hard constraints shape every decision in the system. The first is geometric: rectangular tiles laid on a sphere must stay visually uniform from equator to pole, where meridians converge and naive grids tear apart. The second is a rendering budget: 11,000 textured tiles must paint smoothly on a phone, where one-mesh-per-tile (11k objects, 11k draw calls, 11k textures, 11k downloads) is simply impossible. This post is about how both constraints are met — the math of the tiling, the GPU-compressed atlas pyramid the tiles are sampled from, the bake engine that produces it, the multi-machine architecture that serves it, and the deterministic orbital system for positionless slots.
 
-This post walks through the math that answers the first, the rendering architecture that answers the second, and the design choices that make the result feel like a place rather than a grid.
+## Cosine-weighted spherical tiling
 
-## Tiling a sphere without crowding the poles
-
-The globe holds a fixed $N = 11{,}000$ slots spread across $R = 64$ latitude rows. Each pole reserves a $\theta_{cap} = 10°$ cap for special content, leaving $\theta_{usable} = 180° - 2\theta_{cap} = 160°$ of usable latitude. The sphere has radius $r = 5$ units.
-
-The obvious approach — the same number of columns in every row — breaks immediately. A row near a pole has a much smaller circumference than a row at the equator, so giving them equal column counts would squeeze the polar tiles into thin slivers. The fix is a cosine-weighted distribution, built on the fact that the circumference at latitude $\varphi$ is
-
-$$C(\varphi) = 2\pi r \cos(\varphi).$$
-
-Rows are spaced evenly in latitude, $\Delta\varphi = \theta_{usable}/R = 2.5°$, with row $i$ centered at
+The grid is fixed: $N = 11{,}000$ slots across $R = 64$ latitude rows. Each pole reserves a $\theta_{cap} = 10°$ cap, leaving $\theta_{usable} = 180° - 2\theta_{cap} = 160°$ of usable latitude on a sphere of radius $r = 5$. Rows are spaced uniformly in latitude, $\Delta\varphi = \theta_{usable}/R = 2.5°$, with row $i$ centered at
 
 $$\varphi_i = 90° - \theta_{cap} - (i + 0.5)\,\Delta\varphi.$$
 
-Each row then gets a column count proportional to its circumference. Summing $S = \sum_i \cos(\varphi_i)$ over all rows, the raw allocation for row $i$ is
+Equal columns per row would be wrong: circumference shrinks toward the poles as $C(\varphi) = 2\pi r \cos\varphi$, so a fixed column count would crush polar tiles into slivers. Instead each row's column count is made proportional to its circumference. With $S = \sum_{i} \cos\varphi_i$, the raw allocation is
 
-$$c_i^{\text{raw}} = \frac{\cos(\varphi_i)}{S}\cdot N,$$
+$$c_i^{\text{raw}} = \frac{\cos\varphi_i}{S}\cdot N, \qquad c_i = \operatorname{round}\!\big(c_i^{\text{raw}}\big).$$
 
-which is rounded to an integer $c_i$. Rounding leaves a small error $\varepsilon = N - \sum_i c_i$, corrected by sorting rows from the equator outward and nudging counts by $\pm 1$ until the total lands exactly on 11,000.
+Rounding leaves a residual $\varepsilon = N - \sum_i c_i$ that must be reconciled exactly — the globe is *defined* to hold 11,000 slots. The correction sorts rows by $\cos\varphi_i$ descending (equator outward) and adjusts counts by $\pm 1$ along that order until $\varepsilon = 0$, so the absorbed error lands on the rows that can hide it best. The distribution is precomputed once into a table carrying, per row, its center latitude, column count, and cumulative position range $p_i^{\text{start}}, p_i^{\text{end}}$.
 
-The result is visible in the numbers. The equatorial rows hold about **243** columns each; the polar rows hold only about **48**. Yet because the column count _and_ the available circumference both scale with $\cos(\varphi)$, every tile ends up nearly the same shape — uniform height, and a width of $\approx 0.109$ units at the equator versus $\approx 0.107$ at the poles. The aspect ratio stays essentially constant everywhere. The crowding doesn't get hidden; it gets cancelled.
+The result: the equatorial rows (30–31, at $\varphi \approx \pm 1.25°$) hold $\approx 243$ columns each — row 31 spans positions 5258–5500 — while the polar rows hold $\approx 48$, against a mean of $N/R \approx 172$. The uniformity is worth making exact rather than asserting. Tile height is constant,
 
-This distribution is computed once into a table that also stores each row's cumulative position range, $p_i^{\text{start}}$ and $p_i^{\text{end}}$, so a slot's row can later be found by binary search.
+$$h = \Delta\varphi\cdot\frac{\pi}{180}\cdot r\cdot s \approx 0.183,$$
 
-### From a slot number to a point in space
+with scale factor $s = 0.84$, and tile width is
 
-A slot is just a one-based integer $p \in [1, 11000]$. Turning it into a point on the sphere is two steps.
+$$w = \frac{2\pi r \cos\varphi_i}{c_i}\cdot s.$$
 
-First, **slot to geographic coordinate.** A binary search over the row table finds the row $i$ whose range contains $p$, in $O(\log 64)$ — six comparisons. The column within the row is $j = p - p_i^{\text{start}}$, and the longitude centers the slot in its cell:
+Because the allocation made $c_i \propto \cos\varphi_i$, the $\cos\varphi_i$ cancels and $w$ is nearly invariant — $\approx 0.109$ at the equator versus $\approx 0.107$ at the poles. Every tile carries the same $\approx 1.69{:}1$ aspect: the polar convergence isn't hidden, it's algebraically cancelled.
+
+### Slot ↔ surface, both directions
+
+A slot is a one-based integer $p \in [1, 11000]$. The forward map is two steps. First, a binary search over the row table finds the row whose range contains $p$ in $O(\log 64)$ — six comparisons. The intra-row column is $j = p - p_i^{\text{start}}$, and the longitude centers the slot in its cell:
 
 $$\lambda = \frac{j + 0.5}{c_i}\cdot 360° - 180°.$$
 
-Second, **geographic to Cartesian**, the standard transform in Three.js's Y-up convention, with polar angle $\theta = 90° - \varphi_i$ and azimuth $\psi = \lambda + 180°$:
+Then the geographic-to-Cartesian transform, in Three.js's Y-up convention, with $\theta = 90° - \varphi_i$ and $\psi = \lambda + 180°$:
 
 $$x = -r\sin\theta\cos\psi, \quad y = r\cos\theta, \quad z = r\sin\theta\sin\psi.$$
 
-The negation on $x$ is just coordinate-system handedness.
+The reverse map is the one that matters for performance. Hit-testing a tap means converting a raycast point $P=(x,y,z)$ back to a slot, and the earlier renderer did it by brute force — an $O(N)$ scan allocating a vector per tile. The geometry inverts in closed form instead. With $d = |P|$, latitude is $\varphi = \arcsin(y/d)$; if $|\varphi| > 80°$ the tap is a pole interaction, not a slot. Longitude comes from inverting the forward transform: since $z/(-x) = \tan\psi$, we recover $\psi = \operatorname{atan2}(z, -x)$, normalize to $[0, 2\pi)$, and convert back to $\lambda$. The nearest row minimizes $|\varphi_i - \varphi|$ over 64 candidates, and the column is
 
-### Reversing the map for free hit-testing
+$$j = \left\lfloor \frac{\lambda + 180°}{360°}\cdot c_i \right\rfloor,$$
 
-The same geometry runs backwards to answer "which slot did the user tap?" Given a raycast hit point $P = (x, y, z)$ with magnitude $d = |P|$, latitude falls straight out as $\varphi = \arcsin(y/d)$; if $|\varphi|$ is past the $80°$ pole threshold, the tap is a pole interaction rather than a slot. Longitude inverts the forward transform through $\psi = \operatorname{atan2}(z, -x)$, the nearest row comes from a short scan, and the column is recovered by flooring back through the longitude formula.
+clamped, giving $p = p_i^{\text{start}} + j$. Hit detection is $O(1)$ arithmetic. Nothing about a tile's location is stored anywhere — it is always recomputed, forward or backward, from $p$ alone. That property is the seed of everything that follows.
 
-This matters more than it looks. The first version brute-forced every tile to find the closest one — $O(N)$ per click, allocating a vector per tile. The geometric inverse is **$O(1)$**: a tap resolves to a slot with pure arithmetic, no iteration over 11,000 candidates. The globe never stores where anything is, because it can always compute it.
+## One instanced mesh over a baked atlas
 
-## Drawing 11,000 tiles at once
+All purchased tiles draw as a single `InstancedMesh` of one shared unit quad. Each instance carries only two attributes: `aIndex` (its 0-based slot index) and `aTint` (a fallback color). The instance matrix places it at its surface point and orients it outward; the whole mesh is rebuilt only when the *set* of purchased positions changes (a sale), gated by a `tilesKey` string so the routine 30 s data poll never triggers a rebuild. Empty slots aren't objects at all — their outlines merge into one `LineSegments`, with a single reusable overlay repositioned to whichever empty tile is hovered. An inner occlusion sphere at $r - 0.06$ hides back-facing tiles bleeding through gaps; an invisible interaction sphere at $r$ is the raycast target.
 
-The geometry tells us where each tile goes. The budget tells us we can't treat 11,000 tiles as 11,000 separate things.
+The texture each instance samples comes from a baked atlas, and the GPU does the addressing itself. A custom GLSL3 `ShaderMaterial` re-derives each instance's atlas cell from `aIndex` *in the vertex shader*, using the exact packing the backend baker used — so placing 11,000 tiles into their atlas cells costs nothing on the CPU. The fragment shader samples the crisp level if its page is resident, falls back to the low-res floor, and falls back again to `aTint`. A tile degrades L1 → L0 → color and is never blank.
 
-The first renderer did exactly that — one textured mesh per slot. That is 11,000 scene objects, 11,000 draw calls, 11,000 image downloads, and 11,000 GPU textures. It is simply impossible on mobile. The current architecture replaces all of it with one instanced mesh sampling a compressed texture atlas.
+## The atlas pyramid
 
-### One mesh, one draw call
+The atlas is a three-level level-of-detail pyramid. Each level is a hard visual floor for the one above, so a tile always has *something* to show while a sharper level streams in.
 
-Every purchased tile is a single instance of one shared unit quad, drawn as a single `InstancedMesh`. Each instance carries only two small attributes: its slot index and a fallback tint color. Its transform — placing it on the surface and orienting it outward — is built once from the geometry above, and the whole mesh is rebuilt only when the _set_ of purchased slots actually changes (a sale), never on the routine background poll. Empty, unpurchased slots aren't objects at all: their outlines are merged into one `LineSegments`, with a single reusable highlight overlay moved to whichever empty tile is hovered. The entire surface ends up rendering in roughly **one instanced draw call**, plus one line draw for the empties.
+- **L0** — 32 px cells, **ETC1S**. A single 4096² page holds $\lfloor 4096/32 \rfloor^2 = 128^2 = 16{,}384$ cells, enough to cover all 11k tiles in one page that compresses to a few hundred KB. One fetch and the entire globe shows a low-res floor.
+- **L1** — 128 px cells, **UASTC + zstd**. A page holds $\lfloor 4096/128 \rfloor^2 = 32^2 = 1{,}024$ cells, so $\lceil 11000/1024 \rceil = 11$ pages span the grid. This is the workhorse level at normal zoom.
+- **L2** — full resolution, **never baked**. The frontend lazily overlays the original image ($\approx 640$ px) for the handful of tiles being looked at — the hovered tile and the front-facing tiles nearest screen-center below `detailZoom = 13` — LRU-bounded to $\le 32$ resident planes. A freshly approved image is overlaid optimistically and silently handed to the baked tile once its page lands, so new images appear in seconds, not after a bake.
 
-### A level-of-detail pyramid, baked once
+The two atlas formats are a deliberate asymmetry. ETC1S is tiny and lower quality — acceptable for a floor. UASTC is larger but crisp, and zstd-supercompresses the otherwise-flat 16.7 MB UASTC payload by $\approx 40$–$50\%$ losslessly (ETC1S is already entropy-coded, so zstd is invalid there). Because the two levels use different formats, they cannot share a unified `sampler2DArray` and are bound as separate samplers: one L0 plus up to eleven L1, for 12 — comfortably under the WebGL2 `MAX_TEXTURE_IMAGE_UNITS` floor of 16. That budget is load-bearing: `ATLAS_MAX_L1_PAGES = 11`, and a misconfigured `GLOBE_ATLAS_TOTAL_SLOTS` that would need a twelfth L1 page makes the service **refuse to boot**, because those tiles would bake but never sample. One more detail with downstream consequences: each source image is resized into its square cell rather than cropped, so the atlas framing matches the L2 full-res framing exactly and there is no jump when a tile upgrades from atlas to overlay.
 
-The images themselves live in a three-level level-of-detail pyramid, baked on the server into GPU-compressed texture pages. Each level is a hard visual floor for the one above it, so a tile is never blank while something sharper streams in.
+### Deterministic packing
 
-The bottom level, **L0**, uses 32-pixel cells in the small ETC1S format. A single 4096-pixel page holds $128^2 = 16{,}384$ cells — enough to cover the whole globe — and compresses to a few hundred kilobytes, so one fetch is enough for the entire world to show _something_. The middle level, **L1**, uses crisper 128-pixel cells (UASTC, zstd-compressed); at 1,024 cells per page it takes about eleven pages to span the grid, and it's the level you actually browse at. The top level, **L2**, is never baked at all — the frontend lazily overlays the real, full-resolution image over only the handful of tiles under the cursor or near screen-center when zoomed in, capped to a small resident set. That's why a zoomed-in tile is razor-sharp while the zoomed-out floor stays cheap.
+A slot's place in the atlas is computed, never stored. For a one-based `position` and a cell size:
 
-The fragment shader prefers L1 if its page is loaded, falls back to the L0 floor, and falls back again to the flat tint. A tile degrades L1 → L0 → color and is never empty.
+```
+cellsPerRow  = PAGE_SIZE / cellSize          # PAGE_SIZE = 4096
+tilesPerPage = cellsPerRow²
+idx   = position - 1
+page  = idx / tilesPerPage
+cell  = idx % tilesPerPage
+cellX = (cell % cellsPerRow) * cellSize
+cellY = (cell / cellsPerRow) * cellSize
+```
 
-### A tile's place in the atlas is computed, not stored
+Because this is deterministic, the manifest the browser downloads lists only *which pages exist* — never where each of 11,000 tiles sits. There is no per-tile manifest. The cost is that this identical arithmetic now lives in three places that must stay in exact lockstep: the backend baker (`cell_coords`), the frontend packing module (unit-tested against a backend-generated fixture), and the GPU vertex shader. Any drift would silently map every tile past the first page to the wrong cell.
 
-The key property of the atlas is that a slot's position _inside_ it is pure arithmetic. For a one-based position and a cell size, the page is $\lfloor (p-1) / \text{tilesPerPage} \rfloor$ and the cell within that page is $(p-1) \bmod \text{tilesPerPage}$, where $\text{tilesPerPage} = (\text{pageSize} / \text{cellSize})^2$. The cell's pixel coordinates follow directly.
+## The bake engine
 
-Because that mapping is deterministic, the manifest the browser downloads only has to say _which pages exist_ — never where any of the 11,000 tiles sits. There is no per-tile lookup table to ship. The catch is that this same arithmetic now lives in three places that must stay in lockstep: the backend baker, the frontend packing module, and the GPU vertex shader, which re-derives each instance's atlas cell straight from its index so the GPU places every tile for free. Any drift between the three would silently send every tile past the first page to the wrong cell, so the frontend's copy is unit-tested against a fixture generated by the backend.
+The encoder is the KTX-Software `toktx` CLI (the basis-universal Rust crate can't reliably emit `.ktx2`), shelled out to and never blocking an HTTP request. The service holds three pieces of state, all behind `Arc`:
 
-### Keeping it live without re-baking the world
+- **`version: u64`** — a monotonic counter, **seeded from the wall clock** at boot. Seeding from the clock rather than 1 guarantees that any `?v=` a browser or CDN cached from a prior run is strictly less than this run's versions, so a restart can never serve a stale page under a reused version.
+- **`pages`** — a hot cache of encoded KTX2 bytes for pages baked or fetched this process. The raw 4096²×4 RGBA canvases ($\approx 67$ MB each) are transient, built during a bake and dropped, never held resident.
+- **`present`** — the source of truth for what exists in storage, mapping each `(level, page)` to *its own* version. This is what drives both the manifest and per-page cache invalidation.
 
-Approvals don't rebuild the pyramid. When a new image goes live, its slot's position is appended to an append-only queue, and a background process bakes only the one or two pages that position touches — seconds of work instead of the minutes a full bake costs. Each page carries its own version number, so a single approval invalidates only the page(s) it changed on the CDN, and the frontend re-fetches just those. Crash safety comes from a single `complete` flag in the persisted pointer: a full bake writes `false` before uploading any page and `true` only after everything lands, so a process killed mid-bake cleanly rebuilds on restart instead of serving a half-written globe. A freshly approved image is even overlaid optimistically on the client the moment it's approved, then quietly handed off to the baked tile once the page lands — so it shows up in seconds, not after the bake.
+A `bake_lock` serializes every bake so a minutes-long boot bake and a concurrent incremental drain can't interleave into a torn `present` or duplicate version bumps. A bake runs either **full** (at boot) or **incremental** (on approval). Holding the lock, it probes the encoder, fetches sold slots once (paginated by *actual rows returned*, so Supabase's default `db-max-rows = 1000` can't silently truncate the globe past 1k sold), bumps `version` **once** for the whole run, then for each target page downloads its in-range images under bounded concurrency, decodes and resizes each into its square cell, stamps them into a fresh RGBA canvas on a blocking thread (CPU work kept off the async executor), and encodes with `toktx`. Empty L1 pages are skipped entirely — the frontend 404s there and falls back to L0 — but L0 is *always* baked so every tile has a floor. Pages upload to a stable key with `Cache-Control: immutable`; the `?v=` query, not the path, busts the cache. So an approval that dirties two pages invalidates exactly those two on the CDN, not the whole pyramid.
 
-## Camera, motion, and touch
+The encode is the heaviest step in the system. `toktx` runs with `--t2 --encode etc1s|uastc` and `--assign_oetf srgb`; internal mipmaps are **off**, because a gutterless packed atlas bleeds across cells at coarse mips and the L0/L1 pyramid already *is* the LOD. The **L0 ETC1S encode of a 4096² page needs $\approx 850$ MB of RAM** — the single reason the baker machine is provisioned at 2 GB. The subprocess carries a 180 s timeout and `kill_on_drop`.
 
-A correct globe that feels dead is a failure, so the interaction layer is tuned for physicality.
+### Persistence and crash safety
 
-The camera is a perspective camera pulled back along the Z axis, and its distance doesn't snap — it eases exponentially toward its target each frame, $z \mathrel{+}= (z_{\text{target}} - z)\cdot 0.08$, so every zoom decelerates into place. Rotation is stored as two Euler angles: vertical tilt is clamped to just under $\pm 82°$ to stop the globe flipping over a pole, while horizontal spin is unbounded and wraps naturally. A drag converts pointer motion into angular velocity scaled by the current zoom — you rotate more gently when zoomed in — and on release that velocity decays by $0.94$ per frame, an inertial spin that coasts to a stop. Left alone, the globe drifts into a slow idle rotation.
+The only persisted shared state is a small JSON pointer in storage, written `no-cache`:
 
-Hovering a purchased tile makes it pop: the instance's transform is recomposed each frame toward $1.4\times$ scale and a quarter-unit lift along its surface normal, and its sharp L2 overlay is glued to the same popped transform so the crisp image rides on top of the magnified low-res cell instead of lagging behind it. On exit it lerps back and snaps home.
+```
+{ version, complete: bool, total_slots, pages: [[level, page, page_version], …] }
+```
 
-Touch is a small state machine over an active-pointers map. A gesture only counts as a _click_ if it travelled under 10 px, drifted under 15 px total, and was held under 300 ms — otherwise it's a drag or a two-finger pinch driving zoom. And because the geometry from the first section is invertible, a confirmed click resolves through a clean priority cascade — orbital tiles first, then the globe surface, then the pole regions, then the specific slot — all with $O(1)$ math and no per-tile hit-testing anywhere.
+On boot the service either **hydrates** — if `complete == true`, `total_slots` matches, and pages exist, it loads `version` (clamped to at least the wall clock) and `present` and skips baking, so a restart is instant — or does a **full rebake** otherwise. The `complete` flag is the crash-safety mechanism: a full bake writes `false` *before* uploading any page and `true` only *after* the final pointer write. A hard kill between uploading pages and writing the pointer leaves `false`, so the next boot cleanly rebakes instead of hydrating a half-written set whose uploaded-but-unreferenced pages would render as invisible tiles. Incremental drains never write `false` — they only extend an already-complete set. An older two-tuple pointer (predating per-page versions) fails to deserialize and triggers a one-time full rebake that re-stamps every page, self-healing.
 
-## Wishes in orbit
+### Incremental drains: the dirty inbox
 
-Not every slot lives on the surface. **Wish slots** have no fixed grid position, so they don't sit on the globe — they orbit it, as a slow field of floating tiles. The orbital field and the wish ritual are two halves of one idea, so they're worth telling together.
+Approvals don't bake inline. An approval appends the slot's `position` to an **append-only `atlas_dirty` Postgres table**, and a loop on the baker drains it every $\approx 10$ s: read a batch oldest-first, record the **highest id seen** as a watermark, compute the distinct `(level, page)` set those positions touch, bake just those pages, and on success delete rows with `id <= watermark` in one statement. Rows inserted *during* the bake get higher ids and survive to the next tick. The append-only design — no unique constraint on `position` — is deliberate: a re-approval landing while a position's bake is in flight becomes a fresh higher-id row and re-bakes next tick, whereas a unique index would make it a no-op and the drain would then delete the only row, silently dropping the new image. Deleting by `id <= watermark` rather than an `IN (…)` list also keeps the delete request small at the batch cap.
 
-A wish can only be made at **11:11**, morning and night, in the user's own local time. The whole mechanism is a three-phase state machine computed purely from the clock. The _active_ phase is the 60-second window when the hour is 11 or 23 and the minute is exactly 11; the pole display counts down from 60. The _teaser_ phase is the minute before — a one-minute warning that the door is about to open. Everything else is _idle_, showing only a long countdown to the next window, which is plain modular arithmetic: express "now" as milliseconds since midnight, compare against the two daily targets (rolling a passed one forward by 24 hours), take the minimum, and format it so the precision tightens as the moment approaches — `7h 23m`, then `45m 12s`, then a bare `30s`.
+## The baker/serve split
 
-The engineering grace note is the scheduler. Polling the clock every second through twelve idle hours would be wasteful, so the timer is adaptive: while idle it computes the milliseconds until the next teaser and sleeps with a single long timeout (capped at an hour to bound drift), only switching to a one-second interval once a window is near. The timer sleeps through almost the entire half-day and wakes just in time. Timezone validation is deliberately loose — 11:11 means a different absolute instant for different people, and that's the point. It's a personal synchronization, a ritual rather than a global event: the narrow window asks for presence, the teaser builds anticipation, the countdown keeps it in the back of your mind all day. A completed wish mints a tile with no grid position and no equity, and generates a one-off keepsake image for it — a tall, phone-shaped canvas with a procedurally chosen palette, a scattered star field, a soft glow, the `11:11` header, and the wish text auto-scaled to fit.
+All of that coordination state — `version`, `present`, the dirty signal — originally lived in process memory, which silently locked the app to one machine: two instances would clobber each other's pointer, flap the version, and quote divergent price tiers. The fix is a role split. Exactly **one `baker`** is the sole writer — it bakes pages, owns the monotonic version, writes the pointer, and drains the inbox. **N `serve`** instances are read-only and never bake. The role comes from `ATLAS_ROLE`, falling back to the platform's injected process group. Three things make this safe across machines:
 
-Because wish tiles have no surface position, they're rendered as orbiting debris — and that's where a second little physics engine lives. The field is organized into $L = 5$ concentric layers, each with its own radius, a pair of axis tilts, and an angular velocity. The tilts matter: if every layer shared an orbital plane the field would read as flat concentric rings, so the inclinations are staggered to give it real volume. The angular velocities follow a deliberately Keplerian rule, $\omega_l \propto 1/r_l$ — closer shells sweep faster, outer shells drift slowly. That single proportionality is what produces parallax: inner tiles streak across the view while outer ones barely move, and the eye reads depth without any stereo trick. Each layer is a group whose tilt is fixed at construction and whose spin is incremented every frame; because the layers are children of the globe, dragging the globe carries the whole field with it while the per-layer spin keeps turning underneath.
+- **A cross-machine dirty signal.** Because an approval can land on any serve instance, "needs bake" is the `atlas_dirty` table, not an in-memory set — any instance appends, the single baker drains.
+- **Serve re-hydration.** Serve instances poll the pointer every 10 s and adopt a newer published version, swapping in its `present` map. They serve the *raw* published version rather than one floored to each box's wall clock, so the whole fleet agrees on the manifest version and ETag — no flap.
+- **DB-authoritative state.** The sold-slot count that drives pricing is read fresh from the database at quote time, not from a per-process counter that would diverge per machine.
 
-Wishes are spread across layers by simple round-robin, $l = i \bmod L$, and spaced evenly around each ring before being perturbed. Those perturbations are what make a deterministic field look organic. A tiny hash-based generator,
+Failover is simply that the platform restarts the baker; it hydrates from the pointer instantly and drains whatever accumulated in `atlas_dirty` while it was down, during which serving is unaffected — only newly approved images wait.
 
-$$\operatorname{seededRandom}(s) = \operatorname{frac}\!\big(\sin(s \cdot 127.1 + 311.7)\cdot 43758.5453\big),$$
+### Serving and the manifest
 
-turns each tile's index into stable pseudo-randomness — identical across reloads, so the field never reshuffles between visits. Each tile draws three uncorrelated offsets from it: a small vertical nudge, a radial jitter off its shell, and a breathing phase. That last one drives a gentle life-sign — every tile's scale oscillates as $\sin(t\cdot 0.6 + \varphi_{\text{breath}})$, a roughly ten-second cycle, with staggered phases so the field never pulses in mechanical unison. The orbiting wishes end up reading as a distinct category of slot, circling the world and waiting for placement, and because there are only ever a modest number of them they can afford to stay individual meshes rather than fold into the instanced atlas the surface grid demands.
+A page request hits the hot cache, else lazily downloads from storage if the page is in `present` (without re-caching — the fallback exists only for CDN edge-misses), else 404s. In practice browsers fetch pages straight from the CDN; the API route is only a fallback. The manifest is the contract the frontend renders against:
 
-## The shape of the whole thing
+```
+{ version, totalSlots,
+  levels: [{ level, cellSize, pageSize, pageCount, tilesPerPage, format }],
+  baseUrl,
+  pages: [[level, page, version]] }
+```
 
-Step back and the system is really one idea in three registers. Mathematically, almost nothing is stored that can instead be computed — a slot's place on the sphere, its cell in the atlas, the slot under your finger, a wish's seat in orbit are all derived on demand, which is what keeps an 11,000-element world cheap. As engineering, the surface collapses into a single instanced draw over a baked, incrementally-updated level-of-detail pyramid, so the per-tile cost that should have killed it on mobile never appears. And as design, that efficiency buys back the things that make it feel alive: the inertial spin, the tile that pops under your thumb, the slow Keplerian drift of the orbital field, and the 60-second door that opens twice a day. Eleven thousand tiles, and a sky full of wishes, running off a handful of equations.
+It is tiny, served `max-age=10` with an ETag derived from `version`, so a poll is a cheap `304`. The per-page versioning is the efficiency: one approval bumps only the version of the page(s) it changed, and the frontend — polling every 10 s — reloads only those.
+
+## Hard-won failure modes
+
+Several of the sharpest bugs are worth stating outright, because they are non-obvious and recurred:
+
+- **The CSP must allow the Basis WASM transcoder.** KTX2 is decoded by Basis as WebAssembly in a `blob:` worker. The production CSP needs `'unsafe-eval'` (the emscripten glue calls `new Function()` — `'wasm-unsafe-eval'` alone is *insufficient*), `worker-src blob:`, and the CDN/storage hosts in `connect-src` (the worker fetches pages via XHR). Miss any and the zoomed-out atlas greys out while the zoomed-in L2 overlay — a plain image, no WASM — still works. That asymmetry is the diagnostic tell.
+- **Color space.** `KTX2Loader` tags pages sRGB; the verbatim-write shader then renders them dark. The fix is to force `NoColorSpace` on load.
+- **GLSL ES 3.00 sampler arrays need constant indices.** Indexing `uL1[i]` with a loop variable fails to link on Metal/ANGLE, and the tiles fall back to their tint. The fix is to unroll to literal `uL1[0]`, `uL1[1]`, …
+- **404 and 429 on page loads are expected and silent.** A 404 is a skipped empty page (the tile falls back to L0); a 429 is the rate limiter under React StrictMode's doubled parallel loads. Both retry or degrade rather than error.
+
+## Rendering positionless slots: the orbital field
+
+A subset of slots carry no grid position and so cannot be placed on the surface at all. They are rendered as a separate particle system orbiting the globe — its own small, fully deterministic engine. Particles are organized into $L = 5$ concentric layers, each a group with a fixed pair of axis tilts (so the orbital planes intersect at different inclinations instead of reading as flat concentric rings) and an angular velocity following $\omega_l \propto 1/r_l$ — a Keplerian rule where inner shells sweep faster. That single proportionality produces parallax: inner tiles streak across the viewport while outer ones drift, giving depth without stereoscopy. Each layer's `rotation.y` is incremented by $\omega_l\,\Delta t$ per frame, and because the layers are children of the globe group, rotating the globe carries the whole field while the per-layer spin keeps turning underneath.
+
+Determinism is the requirement — the field must be identical across reloads with no stored layout. Particles are distributed across layers by round-robin, $l = i \bmod L$, evenly spaced at base angle $\theta_j = (j/m_l)\cdot 2\pi$, then perturbed by a hash-based PRNG:
+
+$$\operatorname{seededRandom}(s) = \operatorname{frac}\!\big(\sin(s\cdot 127.1 + 311.7)\cdot 43758.5453\big).$$
+
+A particle's global index $g$ seeds three uncorrelated streams (via distinct multipliers): a vertical offset, a radial jitter off its nominal shell radius, and a breathing phase. The breathing drives a scale oscillation $\sin(t\cdot 0.6 + \varphi_{\text{breath}})\cdot 0.04$ — a $\approx 10.5$ s cycle whose staggered phases keep the field from pulsing in unison. All particles share one geometry (sized to the equatorial tile, row $\lfloor R/2 \rfloor = 32$) and the globe's URL-keyed texture cache, and each `lookAt`s twice its own position vector to face radially outward. Unlike the 11k surface grid — collapsed into a single instanced mesh — these stay individual meshes: the count is small, and each needs its own orbital transform and breathing scale.
+
+## In one line
+
+The whole system is one idea in several registers: store almost nothing that can instead be computed. A slot's place on the sphere, its cell in the atlas, the slot under a tap, a positionless tile's seat in orbit — all derived on demand from an index, which is what lets an 11,000-tile world collapse into a single instanced draw over a baked, incrementally-versioned, crash-safe pyramid served read-only across a fleet, with a deterministic field of positionless tiles orbiting around it.
 
 View in [https://11s.art](https://11s.art)
